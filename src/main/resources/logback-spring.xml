@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" scanPeriod="30 seconds">
+
+    <!-- 日志生成位置 -->
+    <!--系统日志-->
+    <property name="SYS_LOG_HOME" value="./log/syslogs" />
+
+    <!--日志名称-->
+    <property name="LOG_NAME_INFO" value="punchcard_info"/>
+    <property name="LOG_NAME_ERROR" value="punchcard_error"/>
+
+    <!--引入springboot格式化 从spring-boot:2.1.4.RELEASE defaults.xml复制而来-->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+    <!-- blue 蓝色 cyan 蓝绿色 faint 灰白色 green 绿色 magenta 洋红色 red 红色 yellow 黄色-->
+    <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="FILE_LOG_PATTERN" value="${FILE_LOG_PATTERN:-%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+    <!--logback默认支持颜色-->
+    <!-- 彩色日志格式，magenta：洋红，boldMagenta：粗红，yan：青色，·⊱══> -->
+    <property name="CONSOLE_LOG_PATTERN_DEFAULT" value="%boldMagenta([%d{yyyy-MM-dd HH:mm:ss.SSS}]) %cyan([%X{requestId}]) %boldMagenta(%-5level) %blue(%logger{15}) %red([%thread]) %magenta(:) %cyan(%msg%n)"/>
+
+
+    <!--格式化输出,%d:日期;%thread:线程名;%-5level：级别,从左显示5个字符宽度;%msg:日志消息;%n:换行符 : %d{HH:mm:ss.SSS} [%thread] %-5level %logger{50} -%msg%n-->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS}  [%thread] %-5level %logger{50} -%msg%n"/>
+
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 按照每天生成日志文件 -->
+    <appender name="SYS_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${SYS_LOG_HOME}/${LOG_NAME_ERROR}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名 -->
+            <FileNamePattern> ${SYS_LOG_HOME}/${LOG_NAME_ERROR}.log.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 日志文件最大size -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--日志文件保留天数 -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <appender name="SYS_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${SYS_LOG_HOME}/${LOG_NAME_INFO}.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名 -->
+            <FileNamePattern>${SYS_LOG_HOME}/${LOG_NAME_INFO}.log.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 日志文件最大size -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--日志文件保留天数 -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+
+    <!--该标签只能有一个，用来声明根记录器root的一些属性它有一个属性level用来声明日志等级：trace< debug< info< warn< error，此外所有的appender都需要告诉root根记录器，常用配置如下：-->
+    <!-- 声明日志级别，这里声明将作用于所有记录器-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!--
+        <logger>用来设置某一个包或者具体的某一个类的日志打印级别 以及指定<appender>。
+        <logger>仅有一个name属性，一个可选的level和一个可选的addtivity属性。
+            name:用来指定受此logger约束的某一个包或者具体的某一个类。
+            level:用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，如果未设置此属性，那么当前logger将会继承上级的级别。
+            addtivity:是否向上级logger传递打印信息。默认是true
+   -->
+    <logger name="com.sznikola.punchcard" additivity="false" level="DEBUG">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="SYS_INFO" />
+        <appender-ref ref="SYS_ERROR" />
+    </logger>
+
+</configuration>
