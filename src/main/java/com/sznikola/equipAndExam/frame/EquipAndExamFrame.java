@@ -172,14 +172,6 @@ public class EquipAndExamFrame extends JFrame {
     private JPanel questionNumberAndQuestionButton;
     private JButton numberOneQuestion;
     private JButton numberTwoQuestion;
-    private JButton numberThreeQuestion;
-    private JButton numberFourQuestion;
-    private JButton numberFiveQuestion;
-    private JButton numberSixQuestion;
-    private JButton numberSevenQuestion;
-    private JButton numberEightQuestion;
-    private JButton numberNineQuestion;
-    private JButton numberTenQuestion;
     private JPanel NextQuestionAndLastQuestion;
     private JButton lastButton;
     private JButton nextButton;
@@ -345,14 +337,6 @@ public class EquipAndExamFrame extends JFrame {
         questionNumberAndQuestionButton = new JPanel();
         numberOneQuestion = new JButton();
         numberTwoQuestion = new JButton();
-        numberThreeQuestion = new JButton();
-        numberFourQuestion = new JButton();
-        numberFiveQuestion = new JButton();
-        numberSixQuestion = new JButton();
-        numberSevenQuestion = new JButton();
-        numberEightQuestion = new JButton();
-        numberNineQuestion = new JButton();
-        numberTenQuestion = new JButton();
         NextQuestionAndLastQuestion = new JPanel();
         lastButton = new JButton();
         nextButton = new JButton();
@@ -887,7 +871,7 @@ public class EquipAndExamFrame extends JFrame {
                                             countDownAndButton.setBackground(new Color(0xfbfbfb));
 
                                             //---- countDown ----
-                                            countDown.setText("倒计时:30分");
+                                            countDown.setText("倒计时:30秒");
                                             countDownAndButton.add(countDown);
 
                                             //---- startBtn ----
@@ -966,38 +950,6 @@ public class EquipAndExamFrame extends JFrame {
                                             numberTwoQuestion.setText("2");
                                             questionNumberAndQuestionButton.add(numberTwoQuestion);
 
-                                            //---- numberThreeQuestion ----
-                                            numberThreeQuestion.setText("3");
-                                            questionNumberAndQuestionButton.add(numberThreeQuestion);
-
-                                            //---- numberFourQuestion4 ----
-                                            numberFourQuestion.setText("4");
-                                            questionNumberAndQuestionButton.add(numberFourQuestion);
-
-                                            //---- numberFiveQuestion ----
-                                            numberFiveQuestion.setText("5");
-                                            questionNumberAndQuestionButton.add(numberFiveQuestion);
-
-                                            //---- numberSixQuestion ----
-                                            numberSixQuestion.setText("6");
-                                            questionNumberAndQuestionButton.add(numberSixQuestion);
-
-                                            //---- numberSevenQuestion ----
-                                            numberSevenQuestion.setText("7");
-                                            questionNumberAndQuestionButton.add(numberSevenQuestion);
-
-                                            //---- numberEightQuestion ----
-                                            numberEightQuestion.setText("8");
-                                            questionNumberAndQuestionButton.add(numberEightQuestion);
-
-                                            //---- numberNineQuestion ----
-                                            numberNineQuestion.setText("9");
-                                            questionNumberAndQuestionButton.add(numberNineQuestion);
-
-                                            //---- numberTenQuestion ----
-                                            numberTenQuestion.setText("10");
-                                            questionNumberAndQuestionButton.add(numberTenQuestion);
-
                                             //======== NextQuestionAndLastQuestion ========
                                             {
                                                 NextQuestionAndLastQuestion.setLayout(new BoxLayout(NextQuestionAndLastQuestion, BoxLayout.X_AXIS));
@@ -1017,9 +969,8 @@ public class EquipAndExamFrame extends JFrame {
                                     }
                                     examMainPanel.add(ButtonPanel, BorderLayout.SOUTH);
                                     registerListeners(examTitleLabel, countDown, questionLabel, answerLabel, startBtn, submit,
-                                            numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion,
-                                            numberFiveQuestion, numberSixQuestion, numberSevenQuestion, numberEightQuestion, numberNineQuestion, numberTenQuestion,
-                                            lastButton, nextButton, selectAButton, selectBButton, selectCButton, selectDButton);
+                                            numberOneQuestion, numberTwoQuestion, lastButton, nextButton, selectAButton,
+                                            selectBButton, selectCButton, selectDButton);
                                 }
                                 examCardPanel.add(examMainPanel, "card2");
                             }
@@ -1114,33 +1065,19 @@ public class EquipAndExamFrame extends JFrame {
         }
     }
     public void registerListeners(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel, JLabel answerLabel, JButton startBtn,
-                                  JButton submit, JButton numberOneQuestion, JButton numberTwoQuestion, JButton numberThreeQuestion,
-                                  JButton numberFourQuestion, JButton numberFiveQuestion, JButton numberSixQuestion, JButton numberSevenQuestion,
-                                  JButton numberEightQuestion, JButton numberNineQuestion, JButton numberTenQuestion, JButton lastButton,
+                                  JButton submit, JButton numberOneQuestion, JButton numberTwoQuestion,  JButton lastButton,
                                   JButton nextButton, JButton selectAButton, JButton selectBButton, JButton selectCButton, JButton selectDButton){
         // 开始答题事件
         StartListener startListener = new StartListener(examTitleLabel, countDown, questionLabel, answerLabel,
-                numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion,
-                numberFiveQuestion, numberSixQuestion, numberSevenQuestion, numberEightQuestion,
-                numberNineQuestion, numberTenQuestion, submit);
+                numberOneQuestion, numberTwoQuestion, submit);
             //startExamBtn.addActionListener(startListener);
         startBtn.addActionListener(startListener);
 
         // 跳转事件
         AnswerQuestionListener answerQuestionListener = new AnswerQuestionListener(questionLabel, answerLabel,
-                numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion,
-                numberFiveQuestion, numberSixQuestion, numberSevenQuestion, numberEightQuestion,
-                numberNineQuestion, numberTenQuestion, selectAButton, selectBButton, selectCButton, selectDButton, submit);
+                numberOneQuestion, numberTwoQuestion, selectAButton, selectBButton, selectCButton, selectDButton, submit);
         numberOneQuestion.addActionListener(answerQuestionListener);
         numberTwoQuestion.addActionListener(answerQuestionListener);
-        numberThreeQuestion.addActionListener(answerQuestionListener);
-        numberFourQuestion.addActionListener(answerQuestionListener);
-        numberFiveQuestion.addActionListener(answerQuestionListener);
-        numberSixQuestion.addActionListener(answerQuestionListener);
-        numberSevenQuestion.addActionListener(answerQuestionListener);
-        numberEightQuestion.addActionListener(answerQuestionListener);
-        numberNineQuestion.addActionListener(answerQuestionListener);
-        numberTenQuestion.addActionListener(answerQuestionListener);
         lastButton.addActionListener(answerQuestionListener);
         nextButton.addActionListener(answerQuestionListener);
 
@@ -1209,29 +1146,18 @@ public class EquipAndExamFrame extends JFrame {
     // 跳转事件
     class AnswerQuestionListener implements ActionListener {
         private JLabel questionLabel, answerLabel;
-        private JButton numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion, numberFiveQuestion, numberSixQuestion,
-                numberSevenQuestion, numberEightQuestion, numberNineQuestion, numberTenQuestion;
+        private JButton numberOneQuestion, numberTwoQuestion;
         private JButton selectAButton, selectBButton, selectCButton, selectDButton;
         private JButton submit;
 
         public AnswerQuestionListener(JLabel questionLabel, JLabel answerLabel,JButton numberOneQuestion,JButton numberTwoQuestion,
-                                      JButton numberThreeQuestion, JButton numberFourQuestion, JButton numberFiveQuestion,
-                                      JButton numberSixQuestion, JButton numberSevenQuestion, JButton numberEightQuestion,
-                                      JButton numberNineQuestion, JButton numberTenQuestion, JButton selectAButton, JButton selectBButton,
-                                      JButton selectCButton, JButton selectDButton, JButton submit) {
+                                      JButton selectAButton, JButton selectBButton, JButton selectCButton, JButton selectDButton,
+                                      JButton submit) {
             super();
             this.questionLabel = questionLabel;
             this.answerLabel = answerLabel;
             this.numberOneQuestion = numberOneQuestion;
             this.numberTwoQuestion = numberTwoQuestion;
-            this.numberThreeQuestion = numberThreeQuestion;
-            this.numberFourQuestion = numberFourQuestion;
-            this.numberFiveQuestion = numberFiveQuestion;
-            this.numberSixQuestion = numberSixQuestion;
-            this.numberSevenQuestion = numberSevenQuestion;
-            this.numberEightQuestion = numberEightQuestion;
-            this.numberNineQuestion = numberNineQuestion;
-            this.numberTenQuestion = numberTenQuestion;
             this.selectAButton = selectAButton;
             this.selectBButton = selectBButton;
             this.selectCButton = selectCButton;
@@ -1241,7 +1167,7 @@ public class EquipAndExamFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 10道题目
+                // 2道题目
                 if (flag_start != 1) {
                     JOptionPane.showMessageDialog(null, "先点击开始考试！");
                     return;
@@ -1256,7 +1182,7 @@ public class EquipAndExamFrame extends JFrame {
                 ExamData examData = new ExamData();
                 // 下一题事件或者跳转事件
                 if (questionSort.equals("下一题")) {
-                    if (Integer.valueOf(sort) == 10) {
+                    if (Integer.valueOf(sort) == 2) {
                         JOptionPane.showMessageDialog(null, "已到最后一题！");
                         //提交操作
                         submit.doClick();
@@ -1281,8 +1207,7 @@ public class EquipAndExamFrame extends JFrame {
                     examData = getNext(getParam(questionSort, questionIdMap.get(nowSort), selectABCD));
                 }
                 // 改变按钮颜色
-                changeButton(numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion, numberFiveQuestion,
-                        numberSixQuestion, numberSevenQuestion, numberEightQuestion, numberNineQuestion, numberTenQuestion);
+                changeButton(numberOneQuestion, numberTwoQuestion);
                 // 通用部分
                 try {
                     JlabelSetText(questionLabel, examData.getQuestion().getSubject());
@@ -1366,7 +1291,7 @@ public class EquipAndExamFrame extends JFrame {
 
                 flag_start = 0;
                 examTitleLabel.setText("未开始");
-                countDown.setText("剩时：30分");
+                countDown.setText("剩时：30秒");
                 sort = 0;
                 String submitString = getSubmit(getParam("0", "0", "0"));
                 // 重置全局变量数据
@@ -1402,14 +1327,11 @@ public class EquipAndExamFrame extends JFrame {
     // 开始答题事件
     class StartListener implements ActionListener {
         private JLabel examTitleLabel, countDown, questionLabel, answerLabel;
-        private JButton numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion, numberFiveQuestion, numberSixQuestion,
-                numberSevenQuestion, numberEightQuestion, numberNineQuestion, numberTenQuestion;
+        private JButton numberOneQuestion, numberTwoQuestion;
         private JButton submit;
 
         public StartListener(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel,
-                                     JLabel answerLabel, JButton numberOneQuestion, JButton numberTwoQuestion, JButton numberThreeQuestion,
-                                     JButton numberFourQuestion, JButton numberFiveQuestion, JButton numberSixQuestion, JButton numberSevenQuestion,
-                                     JButton numberEightQuestion, JButton numberNineQuestion, JButton numberTenQuestion, JButton submit) {
+                                     JLabel answerLabel, JButton numberOneQuestion, JButton numberTwoQuestion, JButton submit) {
             super();
             this.examTitleLabel = examTitleLabel;
             this.countDown = countDown;
@@ -1417,14 +1339,6 @@ public class EquipAndExamFrame extends JFrame {
             this.answerLabel = answerLabel;
             this.numberOneQuestion = numberOneQuestion;
             this.numberTwoQuestion = numberTwoQuestion;
-            this.numberThreeQuestion = numberThreeQuestion;
-            this.numberFourQuestion = numberFourQuestion;
-            this.numberFiveQuestion = numberFiveQuestion;
-            this.numberSixQuestion = numberSixQuestion;
-            this.numberSevenQuestion = numberSevenQuestion;
-            this.numberEightQuestion = numberEightQuestion;
-            this.numberNineQuestion = numberNineQuestion;
-            this.numberTenQuestion = numberTenQuestion;
             this.submit = submit;
         }
 
@@ -1435,7 +1349,7 @@ public class EquipAndExamFrame extends JFrame {
                 return;
             }
             // 刷新时间
-            time = 30 * 60 + 1;
+            time = 30 + 3;
             timer.cancel();
             timer = new Timer();
             timerStart(1000, 1, countDown,submit);
@@ -1446,9 +1360,7 @@ public class EquipAndExamFrame extends JFrame {
             AnswerSetText(answerLabel, examData.getQuestion().getOptions());
 
             // 改变颜色
-            changeButton(numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion,
-                    numberFiveQuestion, numberSixQuestion, numberSevenQuestion, numberEightQuestion,
-                    numberNineQuestion, numberTenQuestion );
+            changeButton(numberOneQuestion, numberTwoQuestion);
 
             try {
                 JlabelSetText(questionLabel, examData.getQuestion().getSubject());
@@ -1524,7 +1436,7 @@ public class EquipAndExamFrame extends JFrame {
 
     // 题目换行
     public void JlabelSetText(JLabel Label, String longString) throws InterruptedException {
-        longString = "(第" + sort + "/10题)" + longString;
+        longString = "(第" + sort + "/2题)" + longString;
         StringBuilder builder = new StringBuilder("<html>");
         char[] chars = longString.toCharArray();
         int start = 0;
@@ -1545,9 +1457,7 @@ public class EquipAndExamFrame extends JFrame {
     }
 
     // 已完成题目按钮颜色改变
-    public void changeButton(JButton numberOneQuestion, JButton numberTwoQuestion, JButton numberThreeQuestion,
-                             JButton numberFourQuestion, JButton numberFiveQuestion, JButton numberSixQuestion, JButton numberSevenQuestion,
-                             JButton numberEightQuestion, JButton numberNineQuestion, JButton numberTenQuestion) {
+    public void changeButton(JButton numberOneQuestion, JButton numberTwoQuestion) {
         if (!answerMap.isEmpty()) {
             becomeGRAY();
             // 遍历key(questionSort)
@@ -1558,30 +1468,6 @@ public class EquipAndExamFrame extends JFrame {
                         break;
                     case 2:
                         numberTwoQuestion.setBackground(new Color(37,102,68));
-                        break;
-                    case 3:
-                        numberThreeQuestion.setBackground(new Color(37,102,68));
-                        break;
-                    case 4:
-                        numberFourQuestion.setBackground(new Color(37,102,68));
-                        break;
-                    case 5:
-                        numberFiveQuestion.setBackground(new Color(37,102,68));
-                        break;
-                    case 6:
-                        numberSixQuestion.setBackground(new Color(37,102,68));
-                        break;
-                    case 7:
-                        numberSevenQuestion.setBackground(new Color(37,102,68));
-                        break;
-                    case 8:
-                        numberEightQuestion.setBackground(new Color(37,102,68));
-                        break;
-                    case 9:
-                        numberNineQuestion.setBackground(new Color(37,102,68));
-                        break;
-                    case 10:
-                        numberTenQuestion.setBackground(new Color(37,102,68));
                         break;
                     default:
                         break;
@@ -1598,14 +1484,6 @@ public class EquipAndExamFrame extends JFrame {
     public void becomeGRAY() {
         numberOneQuestion.setBackground(Color.LIGHT_GRAY);
         numberTwoQuestion.setBackground(Color.LIGHT_GRAY);
-        numberThreeQuestion.setBackground(Color.LIGHT_GRAY);
-        numberFourQuestion.setBackground(Color.LIGHT_GRAY);
-        numberFiveQuestion.setBackground(Color.LIGHT_GRAY);
-        numberSixQuestion.setBackground(Color.LIGHT_GRAY);
-        numberSevenQuestion.setBackground(Color.LIGHT_GRAY);
-        numberEightQuestion.setBackground(Color.LIGHT_GRAY);
-        numberNineQuestion.setBackground(Color.LIGHT_GRAY);
-        numberTenQuestion.setBackground(Color.LIGHT_GRAY);
     }
 
     public void becomeCYAN() {
@@ -1615,30 +1493,6 @@ public class EquipAndExamFrame extends JFrame {
                 break;
             case 2:
                 numberTwoQuestion.setBackground(Color.CYAN);
-                break;
-            case 3:
-                numberThreeQuestion.setBackground(Color.CYAN);
-                break;
-            case 4:
-                numberFourQuestion.setBackground(Color.CYAN);
-                break;
-            case 5:
-                numberFiveQuestion.setBackground(Color.CYAN);
-                break;
-            case 6:
-                numberSixQuestion.setBackground(Color.CYAN);
-                break;
-            case 7:
-                numberSevenQuestion.setBackground(Color.CYAN);
-                break;
-            case 8:
-                numberEightQuestion.setBackground(Color.CYAN);
-                break;
-            case 9:
-                numberNineQuestion.setBackground(Color.CYAN);
-                break;
-            case 10:
-                numberTenQuestion.setBackground(Color.CYAN);
                 break;
             default:
                 break;
@@ -1652,7 +1506,7 @@ public class EquipAndExamFrame extends JFrame {
             public void run() {
                 // TODO Auto-generated method stub
                 time--;
-                countDown.setText("剩时：" + String.valueOf(time / 60) + "分" + String.valueOf(time % 60) + "秒");
+                countDown.setText("剩时：" + String.valueOf(time) + "秒");
                 if (time == 0) {
                     timer.cancel();
                     //时间结束调用提交事件

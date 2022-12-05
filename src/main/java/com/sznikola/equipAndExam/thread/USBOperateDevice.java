@@ -42,6 +42,7 @@ public class USBOperateDevice implements Runnable {
         String say = "正在检测人脸";
 
         EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoRedIcon());
+        EquipAndExamFrame.vs.VoiceBroadcast("请正对摄像头");
         EquipAndExamFrame.vs.VoiceBroadcast(say);
         try {
             Thread.sleep(1000);
@@ -103,8 +104,9 @@ public class USBOperateDevice implements Runnable {
                 username = (String) d.get("username");
                 log.info(username);
             }
-            EquipAndExamFrame.getInstance().getEquipInfoLabel().setText(name + "，正在体验设备");
-            EquipAndExamFrame.vs.VoiceBroadcast(name +",请体验");
+            String categoryName = ParameterOperate.extract("categoryName");
+            EquipAndExamFrame.getInstance().getEquipInfoLabel().setText(name + "，正在体验设备" + categoryName);
+            EquipAndExamFrame.vs.VoiceBroadcast(name +",请体验" + categoryName);
             EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoBlueIcon());
 
             boolean flag = true;
