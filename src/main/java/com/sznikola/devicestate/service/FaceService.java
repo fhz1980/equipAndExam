@@ -31,6 +31,10 @@ public class FaceService {
 
     }
 
+    public String allocateDuty(String filename,String idnum ,String name,String sex ,String nation) {
+        return HttpService.allocateDuty(ParameterOperate.extract("mainServiceIDCard"), filename,idnum ,name,sex ,nation);
+    }
+
     //开启设备
     public String judgeMemberData(BufferedImage image, String impl) throws RuntimeException{
         //签到系统的路径

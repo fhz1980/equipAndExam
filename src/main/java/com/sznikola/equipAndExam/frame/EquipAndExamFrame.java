@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sznikola.devicestate.frame.DeviceState;
 import com.sznikola.devicestate.frame.DeviceStateClosed;
 import com.sznikola.devicestate.frame.service.FaceService;
+import com.sznikola.devicestate.service.Examination;
+import com.sznikola.equipAndExam.common.ExamData;
 import com.sznikola.equipAndExam.thread.CurrentViewCamera;
 import com.sznikola.equipAndExam.thread.ExamFace;
 import com.sznikola.equipAndExam.thread.ExamFaceReg;
@@ -36,11 +38,10 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Timer;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 /*
  * Created by JFormDesigner on Wed Nov 16 19:13:57 CST 2022
  */
@@ -156,11 +157,14 @@ public class EquipAndExamFrame extends JFrame {
     private JLabel examineesNameLabel;
     private JPanel countDownAndButton;
     private JLabel countDown;
+    private JButton startBtn;
     private JLabel label1;
-    private JButton commit;
-    private JPanel questionPanel;
+    private JButton submit;
+    private JPanel questionAndAnswerPanel;
+    private JLabel questionLabel;
+    private JLabel answerLabel;
     private JPanel ButtonPanel;
-    private JPanel selsectPanel;
+    private JPanel selectPanel;
     private JButton selectAButton;
     private JButton selectBButton;
     private JButton selectCButton;
@@ -169,7 +173,7 @@ public class EquipAndExamFrame extends JFrame {
     private JButton numberOneQuestion;
     private JButton numberTwoQuestion;
     private JButton numberThreeQuestion;
-    private JButton numberFourQuestion4;
+    private JButton numberFourQuestion;
     private JButton numberFiveQuestion;
     private JButton numberSixQuestion;
     private JButton numberSevenQuestion;
@@ -177,7 +181,7 @@ public class EquipAndExamFrame extends JFrame {
     private JButton numberNineQuestion;
     private JButton numberTenQuestion;
     private JPanel NextQuestionAndLastQuestion;
-    private JButton button1;
+    private JButton lastButton;
     private JButton nextButton;
     private JPanel examInfoLabel;
     private JPanel examCameraFPanel;
@@ -215,6 +219,41 @@ public class EquipAndExamFrame extends JFrame {
     BufferedImage bi = null;
 
     private static SerialPort mSerialport;
+
+    private String userId;
+    private String userName;
+    // 参数
+    private String examId = "";
+    // Key:Value questionSort:answer
+    private Map<String, String> answerMap = new HashMap<String, String>();
+    private Map<String, String> questionIdMap = new HashMap<String, String>();
+
+    private int flag_start = 0;
+    // 题目序号
+    private int sort = 0;
+    // 倒计时
+    private int time;
+    private Timer timer = new Timer();
+    // 当前选中的选项
+    private String selectString = "";
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
         contentPanel = new JPanel();
@@ -291,11 +330,14 @@ public class EquipAndExamFrame extends JFrame {
         examineesNameLabel = new JLabel();
         countDownAndButton = new JPanel();
         countDown = new JLabel();
+        startBtn = new JButton();
         label1 = new JLabel();
-        commit = new JButton();
-        questionPanel = new JPanel();
+        submit = new JButton();
+        questionAndAnswerPanel = new JPanel();
+        questionLabel = new JLabel();
+        answerLabel = new JLabel();
         ButtonPanel = new JPanel();
-        selsectPanel = new JPanel();
+        selectPanel = new JPanel();
         selectAButton = new JButton();
         selectBButton = new JButton();
         selectCButton = new JButton();
@@ -304,7 +346,7 @@ public class EquipAndExamFrame extends JFrame {
         numberOneQuestion = new JButton();
         numberTwoQuestion = new JButton();
         numberThreeQuestion = new JButton();
-        numberFourQuestion4 = new JButton();
+        numberFourQuestion = new JButton();
         numberFiveQuestion = new JButton();
         numberSixQuestion = new JButton();
         numberSevenQuestion = new JButton();
@@ -312,7 +354,7 @@ public class EquipAndExamFrame extends JFrame {
         numberNineQuestion = new JButton();
         numberTenQuestion = new JButton();
         NextQuestionAndLastQuestion = new JPanel();
-        button1 = new JButton();
+        lastButton = new JButton();
         nextButton = new JButton();
 
         //======== this ========
@@ -644,7 +686,7 @@ public class EquipAndExamFrame extends JFrame {
                                         RightPanal.setBackground(new Color(0xfbfbfb));
 
                                         //---- closeEquip ----
-                                        closeEquipBtn.setText("关闭");
+                                        closeEquipBtn.setText("关闭设备");
                                         closeEquipBtn.setBackground(Color.WHITE);
                                         closeEquipBtn.setContentAreaFilled(true);
                                         closeEquipBtn.setMargin(new Insets(4, 8, 4, 8));
@@ -710,7 +752,7 @@ public class EquipAndExamFrame extends JFrame {
 
                                             //---- faceClick ----
                                             faceClick.setText(" ");
-                                            faceClick.setFont(new Font("\u7b49\u7ebf", Font.PLAIN, 25));
+                                            faceClick.setFont(new Font("等线", Font.PLAIN, 25));
                                             examStartFPanel.add(faceClick);
 
                                             startExamBtn.setContentAreaFilled(false);
@@ -725,9 +767,25 @@ public class EquipAndExamFrame extends JFrame {
                                                 public void actionPerformed(ActionEvent e) {
                                                     startExamBtn.setVisible(false);
                                                     executorService.submit(new ExamFaceReg());
-                                                    if (EquipAndExamFrame.getInstance().getFaceClick().getText().equals("识别成功")) {
-                                                        ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
-                                                    }
+                                                    ExecutorService singerExecutorService = Executors.newSingleThreadExecutor();
+                                                    singerExecutorService.submit(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            boolean flag = true;
+                                                            while(flag) {
+                                                                if (EquipAndExamFrame.getInstance().getFaceClick().getText().equals("识别成功")) {
+                                                                    ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
+                                                                    setUserId(ExamFaceReg.username);
+                                                                    setUserName(ExamFaceReg.name);
+                                                                    examineesNameLabel.setText(getUserName());
+                                                                    EquipAndExamFrame.getInstance().getFaceClick().setText(" ");
+                                                                    EquipAndExamFrame.getInstance().getStartExamBtn().setVisible(true);
+                                                                    singerExecutorService.shutdown();
+                                                                    flag = false;
+                                                                }
+                                                            }
+                                                        }
+                                                    });
                                                 }
                                             });
 
@@ -764,15 +822,15 @@ public class EquipAndExamFrame extends JFrame {
                                                 examFaceFPanel.setLayout(new FlowLayout());
 
                                                 //---- examFaceLabel ----
-                                                examFaceLabel.setText("\u8bf7\u8fdb\u884c\u4eba\u8138\u8bc6\u522b");
+                                                examFaceLabel.setText("请进行人脸识别");
                                                 examFaceLabel.setForeground(examColor);
-                                                examFaceLabel.setFont(new Font("\u5fae\u8edf\u6b63\u9ed1\u9ad4", Font.PLAIN, 40));
+                                                examFaceLabel.setFont(new Font("黑体", Font.PLAIN, 40));
                                                 examFaceFPanel.add(examFaceLabel);
 
                                                 //---- examExamLabel ----
-                                                examExamLabel.setText("\u767b\u5f55\u8003\u6838");
+                                                examExamLabel.setText("登录考核");
                                                 examExamLabel.setForeground(examColor);
-                                                examExamLabel.setFont(new Font("\u5fae\u8edf\u6b63\u9ed1\u9ad4 Light", Font.BOLD, 40));
+                                                examExamLabel.setFont(new Font("黑体 Light", Font.BOLD, 40));
                                                 examFaceFPanel.add(examExamLabel);
                                             }
                                             examFacePanel.add(examFaceFPanel, BorderLayout.NORTH);
@@ -799,7 +857,7 @@ public class EquipAndExamFrame extends JFrame {
                                             titlePanel.setBackground(new Color(0xfbfbfb));
 
                                             //---- examTitleLabel ----
-                                            examTitleLabel.setText("\u8003\u6838");
+                                            examTitleLabel.setText("考核");
                                             titlePanel.add(examTitleLabel);
                                         }
                                         titleMainPanel.add(titlePanel, BorderLayout.WEST);
@@ -810,10 +868,15 @@ public class EquipAndExamFrame extends JFrame {
                                             examineesPanel.setBackground(new Color(0xfbfbfb));
 
                                             //---- examineesLabel ----
-                                            examineesLabel.setText("\u8003\u751f:");
+                                            examineesLabel.setText("考生:");
                                             examineesLabel.setHorizontalTextPosition(SwingConstants.CENTER);
                                             examineesLabel.setHorizontalAlignment(SwingConstants.CENTER);
                                             examineesPanel.add(examineesLabel);
+
+                                            //---- examineesLabel ----
+                                            examineesNameLabel.setText("");
+                                            examineesNameLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+                                            examineesNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
                                             examineesPanel.add(examineesNameLabel);
                                         }
                                         titleMainPanel.add(examineesPanel, BorderLayout.CENTER);
@@ -824,57 +887,71 @@ public class EquipAndExamFrame extends JFrame {
                                             countDownAndButton.setBackground(new Color(0xfbfbfb));
 
                                             //---- countDown ----
-                                            countDown.setText("\u5012\u8ba1\u65f6:");
+                                            countDown.setText("倒计时:30分");
                                             countDownAndButton.add(countDown);
 
-                                            //---- label1 ----
-                                            label1.setText("30\u5206");
-                                            countDownAndButton.add(label1);
+                                            //---- startBtn ----
+                                            startBtn.setText("开始考试");
+                                            countDownAndButton.add(startBtn);
+                                            startBtn.addActionListener(new ActionListener() {
+                                                public void actionPerformed(ActionEvent e) {
+                                                    flag_start = 1;
+                                                    EquipAndExamFrame.vs.VoiceBroadcast("开始考试");
+                                                }
+                                            });
 
-                                            //---- commit ----
-                                            commit.setText("\u63d0\u4ea4");
-                                            countDownAndButton.add(commit);
+
+                                            //---- submit ----
+                                            submit.setText("提交");
+                                            countDownAndButton.add(submit);
                                         }
                                         titleMainPanel.add(countDownAndButton, BorderLayout.EAST);
                                     }
                                     examMainPanel.add(titleMainPanel, BorderLayout.NORTH);
 
-                                    //======== questionPanel ========
+                                    //======== questionAndAnswerPanel ========
                                     {
-                                        questionPanel.setLayout(new BoxLayout(questionPanel, BoxLayout.X_AXIS));
-                                        questionPanel.setBackground(new Color(0xfbfbfb));
+                                        questionAndAnswerPanel.setLayout(new BoxLayout(questionAndAnswerPanel, BoxLayout.Y_AXIS));
+                                        questionAndAnswerPanel.setBackground(new Color(0xfbfbfb));
+
+                                        //======== questionLabel ========
+                                        questionLabel.setText("");
+                                        questionAndAnswerPanel.add(questionLabel);
+
+                                        //======== answerLabel ========
+                                        answerLabel.setText("");
+                                        questionAndAnswerPanel.add(answerLabel);
+
                                     }
-                                    examMainPanel.add(questionPanel, BorderLayout.CENTER);
+                                    examMainPanel.add(questionAndAnswerPanel, BorderLayout.CENTER);
 
                                     //======== ButtonPanel ========
                                     {
                                         ButtonPanel.setLayout(new BoxLayout(ButtonPanel, BoxLayout.Y_AXIS));
                                         ButtonPanel.setBackground(new Color(0xfbfbfb));
 
-                                        //======== selsectPanel ========
+                                        //======== selectPanel ========
                                         {
-                                            selsectPanel.setLayout(new BoxLayout(selsectPanel, BoxLayout.X_AXIS));
-                                            selsectPanel.setBackground(new Color(0xfbfbfb));
+                                            selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
+                                            selectPanel.setBackground(new Color(0xfbfbfb));
 
                                             //---- selectAButton ----
                                             selectAButton.setText("A");
-                                            selectAButton.setMinimumSize(new Dimension(23, 23));
-                                            selectAButton.setPreferredSize(new Dimension(23, 23));
-                                            selsectPanel.add(selectAButton);
+                                            selectPanel.add(selectAButton);
 
                                             //---- selectBButton ----
                                             selectBButton.setText("B");
-                                            selsectPanel.add(selectBButton);
+                                            selectPanel.add(selectBButton);
 
                                             //---- selectCButton ----
                                             selectCButton.setText("C");
-                                            selsectPanel.add(selectCButton);
+                                            selectPanel.add(selectCButton);
 
                                             //---- selectDButton ----
                                             selectDButton.setText("D");
-                                            selsectPanel.add(selectDButton);
+                                            selectPanel.add(selectDButton);
                                         }
-                                        ButtonPanel.add(selsectPanel);
+                                        ButtonPanel.add(selectPanel);
 
                                         //======== questionNumberAndQuestionButton ========
                                         {
@@ -894,8 +971,8 @@ public class EquipAndExamFrame extends JFrame {
                                             questionNumberAndQuestionButton.add(numberThreeQuestion);
 
                                             //---- numberFourQuestion4 ----
-                                            numberFourQuestion4.setText("4");
-                                            questionNumberAndQuestionButton.add(numberFourQuestion4);
+                                            numberFourQuestion.setText("4");
+                                            questionNumberAndQuestionButton.add(numberFourQuestion);
 
                                             //---- numberFiveQuestion ----
                                             numberFiveQuestion.setText("5");
@@ -903,35 +980,22 @@ public class EquipAndExamFrame extends JFrame {
 
                                             //---- numberSixQuestion ----
                                             numberSixQuestion.setText("6");
-                                            numberSixQuestion.setMaximumSize(new Dimension(23, 23));
-                                            numberSixQuestion.setMinimumSize(new Dimension(23, 23));
                                             questionNumberAndQuestionButton.add(numberSixQuestion);
 
                                             //---- numberSevenQuestion ----
                                             numberSevenQuestion.setText("7");
-                                            numberSevenQuestion.setMaximumSize(new Dimension(23, 23));
-                                            numberSevenQuestion.setMinimumSize(new Dimension(23, 23));
                                             questionNumberAndQuestionButton.add(numberSevenQuestion);
 
                                             //---- numberEightQuestion ----
                                             numberEightQuestion.setText("8");
-                                            numberEightQuestion.setMaximumSize(new Dimension(23, 23));
-                                            numberEightQuestion.setMinimumSize(new Dimension(23, 23));
-                                            numberEightQuestion.setPreferredSize(new Dimension(23, 23));
                                             questionNumberAndQuestionButton.add(numberEightQuestion);
 
                                             //---- numberNineQuestion ----
                                             numberNineQuestion.setText("9");
-                                            numberNineQuestion.setMinimumSize(new Dimension(23, 23));
-                                            numberNineQuestion.setMaximumSize(new Dimension(23, 23));
-                                            numberNineQuestion.setPreferredSize(new Dimension(23, 23));
                                             questionNumberAndQuestionButton.add(numberNineQuestion);
 
                                             //---- numberTenQuestion ----
                                             numberTenQuestion.setText("10");
-                                            numberTenQuestion.setMinimumSize(new Dimension(23, 23));
-                                            numberTenQuestion.setMaximumSize(new Dimension(23, 23));
-                                            numberTenQuestion.setPreferredSize(new Dimension(23, 23));
                                             questionNumberAndQuestionButton.add(numberTenQuestion);
 
                                             //======== NextQuestionAndLastQuestion ========
@@ -939,12 +1003,12 @@ public class EquipAndExamFrame extends JFrame {
                                                 NextQuestionAndLastQuestion.setLayout(new BoxLayout(NextQuestionAndLastQuestion, BoxLayout.X_AXIS));
                                                 NextQuestionAndLastQuestion.setBackground(new Color(0xfbfbfb));
 
-                                                //---- button1 ----
-                                                button1.setText("\u4e0a\u4e00\u9898");
-                                                NextQuestionAndLastQuestion.add(button1);
+                                                //---- lastButton ----
+                                                lastButton.setText("上一题");
+                                                NextQuestionAndLastQuestion.add(lastButton);
 
                                                 //---- nextButton ----
-                                                nextButton.setText("\u4e0b\u4e00\u9898");
+                                                nextButton.setText("下一题");
                                                 NextQuestionAndLastQuestion.add(nextButton);
                                             }
                                             questionNumberAndQuestionButton.add(NextQuestionAndLastQuestion);
@@ -952,6 +1016,10 @@ public class EquipAndExamFrame extends JFrame {
                                         ButtonPanel.add(questionNumberAndQuestionButton);
                                     }
                                     examMainPanel.add(ButtonPanel, BorderLayout.SOUTH);
+                                    registerListeners(examTitleLabel, countDown, questionLabel, answerLabel, startBtn, submit,
+                                            numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion,
+                                            numberFiveQuestion, numberSixQuestion, numberSevenQuestion, numberEightQuestion, numberNineQuestion, numberTenQuestion,
+                                            lastButton, nextButton, selectAButton, selectBButton, selectCButton, selectDButton);
                                 }
                                 examCardPanel.add(examMainPanel, "card2");
                             }
@@ -992,7 +1060,7 @@ public class EquipAndExamFrame extends JFrame {
     public class CloseEquipFrameRun implements Runnable{
         @Override
         public void run() {
-            String mainService = com.sznikola.equipAndExam.util.ParameterOperate.extract("mainService");
+            String mainService = ParameterOperate.extract("mainService");
             String url = MessageFormat.format("{0}{1}", mainService, "/train/devicestate/OpenCloseDevice");
             Long currenttime = System.currentTimeMillis();
             Long pretime = System.currentTimeMillis();
@@ -1045,4 +1113,553 @@ public class EquipAndExamFrame extends JFrame {
             }
         }
     }
+    public void registerListeners(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel, JLabel answerLabel, JButton startBtn,
+                                  JButton submit, JButton numberOneQuestion, JButton numberTwoQuestion, JButton numberThreeQuestion,
+                                  JButton numberFourQuestion, JButton numberFiveQuestion, JButton numberSixQuestion, JButton numberSevenQuestion,
+                                  JButton numberEightQuestion, JButton numberNineQuestion, JButton numberTenQuestion, JButton lastButton,
+                                  JButton nextButton, JButton selectAButton, JButton selectBButton, JButton selectCButton, JButton selectDButton){
+        // 开始答题事件
+        StartListener startListener = new StartListener(examTitleLabel, countDown, questionLabel, answerLabel,
+                numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion,
+                numberFiveQuestion, numberSixQuestion, numberSevenQuestion, numberEightQuestion,
+                numberNineQuestion, numberTenQuestion, submit);
+            //startExamBtn.addActionListener(startListener);
+        startBtn.addActionListener(startListener);
+
+        // 跳转事件
+        AnswerQuestionListener answerQuestionListener = new AnswerQuestionListener(questionLabel, answerLabel,
+                numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion,
+                numberFiveQuestion, numberSixQuestion, numberSevenQuestion, numberEightQuestion,
+                numberNineQuestion, numberTenQuestion, selectAButton, selectBButton, selectCButton, selectDButton, submit);
+        numberOneQuestion.addActionListener(answerQuestionListener);
+        numberTwoQuestion.addActionListener(answerQuestionListener);
+        numberThreeQuestion.addActionListener(answerQuestionListener);
+        numberFourQuestion.addActionListener(answerQuestionListener);
+        numberFiveQuestion.addActionListener(answerQuestionListener);
+        numberSixQuestion.addActionListener(answerQuestionListener);
+        numberSevenQuestion.addActionListener(answerQuestionListener);
+        numberEightQuestion.addActionListener(answerQuestionListener);
+        numberNineQuestion.addActionListener(answerQuestionListener);
+        numberTenQuestion.addActionListener(answerQuestionListener);
+        lastButton.addActionListener(answerQuestionListener);
+        nextButton.addActionListener(answerQuestionListener);
+
+        // 提交事件
+        SubmitListener submitListener = new SubmitListener(examTitleLabel, countDown, questionLabel, answerLabel,
+                selectAButton, selectBButton, selectCButton, selectDButton);
+        submit.addActionListener(submitListener);
+
+        SelectJLabelListener selectJLabelListener = new SelectJLabelListener(selectAButton, selectBButton,
+                selectCButton, selectDButton);
+        selectAButton.addActionListener(selectJLabelListener);
+        selectBButton.addActionListener(selectJLabelListener);
+        selectCButton.addActionListener(selectJLabelListener);
+        selectDButton.addActionListener(selectJLabelListener);
+    }
+
+    //选择事件
+    class SelectJLabelListener implements ActionListener {
+        private JButton selectAButton, selectBButton, selectCButton, selectDButton;
+
+        public SelectJLabelListener(JButton selectAButton, JButton selectBButton, JButton selectCButton,
+                                    JButton selectDButton) {
+            super();
+            this.selectAButton = selectAButton;
+            this.selectBButton = selectBButton;
+            this.selectCButton = selectCButton;
+            this.selectDButton = selectDButton;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (flag_start != 1) {
+                JOptionPane.showMessageDialog(null, "先点击开始考试！");
+                return;
+            }
+            String str = ((JButton) e.getSource()).getText();
+            if (str.equals("A")) {
+                selectAButton.setBackground(new Color(37, 102, 68));
+                selectBButton.setBackground(Color.LIGHT_GRAY);
+                selectCButton.setBackground(Color.LIGHT_GRAY);
+                selectDButton.setBackground(Color.LIGHT_GRAY);
+                selectString = "A";
+            } else if (str.equals("B")) {
+                selectAButton.setBackground(Color.LIGHT_GRAY);
+                selectBButton.setBackground(new Color(37, 102, 68));
+                selectCButton.setBackground(Color.LIGHT_GRAY);
+                selectDButton.setBackground(Color.LIGHT_GRAY);
+                selectString = "B";
+            } else if (str.equals("C")) {
+                selectAButton.setBackground(Color.LIGHT_GRAY);
+                selectBButton.setBackground(Color.LIGHT_GRAY);
+                selectCButton.setBackground(new Color(37, 102, 68));
+                selectDButton.setBackground(Color.LIGHT_GRAY);
+                selectString = "C";
+            } else if (str.equals("D")) {
+                selectAButton.setBackground(Color.LIGHT_GRAY);
+                selectBButton.setBackground(Color.LIGHT_GRAY);
+                selectCButton.setBackground(Color.LIGHT_GRAY);
+                selectDButton.setBackground(new Color(37, 102, 68));
+                selectString = "D";
+            }
+            answerMap.put(Integer.toString(sort), selectString);
+        }
+    }
+
+    // 跳转事件
+    class AnswerQuestionListener implements ActionListener {
+        private JLabel questionLabel, answerLabel;
+        private JButton numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion, numberFiveQuestion, numberSixQuestion,
+                numberSevenQuestion, numberEightQuestion, numberNineQuestion, numberTenQuestion;
+        private JButton selectAButton, selectBButton, selectCButton, selectDButton;
+        private JButton submit;
+
+        public AnswerQuestionListener(JLabel questionLabel, JLabel answerLabel,JButton numberOneQuestion,JButton numberTwoQuestion,
+                                      JButton numberThreeQuestion, JButton numberFourQuestion, JButton numberFiveQuestion,
+                                      JButton numberSixQuestion, JButton numberSevenQuestion, JButton numberEightQuestion,
+                                      JButton numberNineQuestion, JButton numberTenQuestion, JButton selectAButton, JButton selectBButton,
+                                      JButton selectCButton, JButton selectDButton, JButton submit) {
+            super();
+            this.questionLabel = questionLabel;
+            this.answerLabel = answerLabel;
+            this.numberOneQuestion = numberOneQuestion;
+            this.numberTwoQuestion = numberTwoQuestion;
+            this.numberThreeQuestion = numberThreeQuestion;
+            this.numberFourQuestion = numberFourQuestion;
+            this.numberFiveQuestion = numberFiveQuestion;
+            this.numberSixQuestion = numberSixQuestion;
+            this.numberSevenQuestion = numberSevenQuestion;
+            this.numberEightQuestion = numberEightQuestion;
+            this.numberNineQuestion = numberNineQuestion;
+            this.numberTenQuestion = numberTenQuestion;
+            this.selectAButton = selectAButton;
+            this.selectBButton = selectBButton;
+            this.selectCButton = selectCButton;
+            this.selectDButton = selectDButton;
+            this.submit = submit;
+        }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 10道题目
+                if (flag_start != 1) {
+                    JOptionPane.showMessageDialog(null, "先点击开始考试！");
+                    return;
+                }
+                // 获取当前选项
+                String selectABCD = answerMap.get(Integer.toString(sort));
+                //System.out.println(selectABCD);
+
+                // 跳转的操作
+                String questionSort = ((JButton) e.getSource()).getText();
+                String jumpSort = questionSort;
+                ExamData examData = new ExamData();
+                // 下一题事件或者跳转事件
+                if (questionSort.equals("下一题")) {
+                    if (Integer.valueOf(sort) == 10) {
+                        JOptionPane.showMessageDialog(null, "已到最后一题！");
+                        //提交操作
+                        submit.doClick();
+                        return;
+                    }
+                    // 获取下一题序号
+                    String nextSort = Integer.toString(sort + 1);
+                    jumpSort = nextSort;
+                    examData = getNext(getParam(nextSort, questionIdMap.get(Integer.toString(sort)), selectABCD));
+                } else if (questionSort.equals("上一题")) {
+                    if (Integer.valueOf(sort) == 1) {
+                        JOptionPane.showMessageDialog(null, "已是第一题！");
+                        return;
+                    }
+                    // 获取上一题序号
+                    String previousSort = Integer.toString(sort - 1);
+                    jumpSort = previousSort;
+                    examData = getNext(getParam(previousSort, questionIdMap.get(Integer.toString(sort)), selectABCD));
+                } else {
+                    // 获取当前题目位置
+                    String nowSort = Integer.toString(sort);
+                    examData = getNext(getParam(questionSort, questionIdMap.get(nowSort), selectABCD));
+                }
+                // 改变按钮颜色
+                changeButton(numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion, numberFiveQuestion,
+                        numberSixQuestion, numberSevenQuestion, numberEightQuestion, numberNineQuestion, numberTenQuestion);
+                // 通用部分
+                try {
+                    JlabelSetText(questionLabel, examData.getQuestion().getSubject());
+                    AnswerSetText(answerLabel, examData.getQuestion().getOptions());
+
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                // 回显选项
+                if (answerMap.containsKey(jumpSort)) {
+                    String selectLocalString = answerMap.get(jumpSort);
+                    if (selectLocalString.equals("A")) {
+                        selectAButton.setBackground(new Color(37,102,68));
+                        selectBButton.setBackground(Color.LIGHT_GRAY);
+                        selectCButton.setBackground(Color.LIGHT_GRAY);
+                        selectDButton.setBackground(Color.LIGHT_GRAY);
+                    } else if (selectLocalString.equals("B")) {
+                        selectBButton.setBackground(new Color(37,102,68));
+                        selectAButton.setBackground(Color.LIGHT_GRAY);
+                        selectCButton.setBackground(Color.LIGHT_GRAY);
+                        selectDButton.setBackground(Color.LIGHT_GRAY);
+                    } else if (selectLocalString.equals("C")) {
+                        selectCButton.setBackground(new Color(37,102,68));
+                        selectBButton.setBackground(Color.LIGHT_GRAY);
+                        selectAButton.setBackground(Color.LIGHT_GRAY);
+                        selectDButton.setBackground(Color.LIGHT_GRAY);
+                    } else if (selectLocalString.equals("D")) {
+                        selectDButton.setBackground(new Color(37,102,68));
+                        selectBButton.setBackground(Color.LIGHT_GRAY);
+                        selectCButton.setBackground(Color.LIGHT_GRAY);
+                        selectAButton.setBackground(Color.LIGHT_GRAY);
+                    }
+                } else {
+                    selectAButton.setBackground(Color.LIGHT_GRAY);
+                    selectBButton.setBackground(Color.LIGHT_GRAY);
+                    selectCButton.setBackground(Color.LIGHT_GRAY);
+                    selectDButton.setBackground(Color.LIGHT_GRAY);
+                }
+        }
+    }
+
+        // 提交事件
+        class SubmitListener implements ActionListener {
+            private JLabel examTitleLabel, countDown, questionLabel, answerLabel;
+            private JButton selectAButton, selectBButton, selectCButton, selectDButton;
+
+            public SubmitListener(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel, JLabel answerLabel,
+                                  JButton selectAButton, JButton selectBButton, JButton selectCButton,
+                                  JButton selectDButton) {
+                super();
+                this.examTitleLabel = examTitleLabel;
+                this.countDown = countDown;
+                this.questionLabel = questionLabel;
+                this.answerLabel = answerLabel;
+                this.selectAButton = selectAButton;
+                this.selectBButton = selectBButton;
+                this.selectCButton = selectCButton;
+                this.selectDButton = selectDButton;
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (flag_start != 1) {
+                    JOptionPane.showMessageDialog(null, "请先点击开始考试！");
+                    return;
+                }
+                //提交最后一次答题结果
+
+                // 获取当前选项
+                String selectABCD = answerMap.get(Integer.toString(sort));
+
+                String nowSort = Integer.toString(sort);
+
+                getNext(getParam(nowSort, questionIdMap.get(nowSort), selectABCD));
+
+
+                // 销毁timer
+                timer.cancel();
+                timer = new Timer();
+
+                flag_start = 0;
+                examTitleLabel.setText("未开始");
+                countDown.setText("剩时：30分");
+                sort = 0;
+                String submitString = getSubmit(getParam("0", "0", "0"));
+                // 重置全局变量数据
+                examId = "";
+                answerMap = new HashMap<String, String>();
+                questionIdMap = new HashMap<String, String>();
+
+                selectAButton.setBackground(Color.LIGHT_GRAY);
+                selectBButton.setBackground(Color.LIGHT_GRAY);
+                selectCButton.setBackground(Color.LIGHT_GRAY);
+                selectDButton.setBackground(Color.LIGHT_GRAY);
+
+                questionLabel.setText("你的分数是:" + submitString.substring(11) + "分");
+                answerLabel.setText("");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            EquipAndExamFrame.vs.VoiceBroadcast("考试结束");
+                            Thread.sleep(10000);
+                            questionLabel.setText("");
+                            ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
+                        } catch (InterruptedException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
+                    }
+                }).start();
+
+        }
+    }
+
+    // 开始答题事件
+    class StartListener implements ActionListener {
+        private JLabel examTitleLabel, countDown, questionLabel, answerLabel;
+        private JButton numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion, numberFiveQuestion, numberSixQuestion,
+                numberSevenQuestion, numberEightQuestion, numberNineQuestion, numberTenQuestion;
+        private JButton submit;
+
+        public StartListener(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel,
+                                     JLabel answerLabel, JButton numberOneQuestion, JButton numberTwoQuestion, JButton numberThreeQuestion,
+                                     JButton numberFourQuestion, JButton numberFiveQuestion, JButton numberSixQuestion, JButton numberSevenQuestion,
+                                     JButton numberEightQuestion, JButton numberNineQuestion, JButton numberTenQuestion, JButton submit) {
+            super();
+            this.examTitleLabel = examTitleLabel;
+            this.countDown = countDown;
+            this.questionLabel = questionLabel;
+            this.answerLabel = answerLabel;
+            this.numberOneQuestion = numberOneQuestion;
+            this.numberTwoQuestion = numberTwoQuestion;
+            this.numberThreeQuestion = numberThreeQuestion;
+            this.numberFourQuestion = numberFourQuestion;
+            this.numberFiveQuestion = numberFiveQuestion;
+            this.numberSixQuestion = numberSixQuestion;
+            this.numberSevenQuestion = numberSevenQuestion;
+            this.numberEightQuestion = numberEightQuestion;
+            this.numberNineQuestion = numberNineQuestion;
+            this.numberTenQuestion = numberTenQuestion;
+            this.submit = submit;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            if (flag_start != 0) {
+                return;
+            }
+            // 刷新时间
+            time = 30 * 60 + 1;
+            timer.cancel();
+            timer = new Timer();
+            timerStart(1000, 1, countDown,submit);
+            // 第二次点击开始按钮无效
+            flag_start = 1;
+            examTitleLabel.setText("开始答题");
+            ExamData examData = getStart(getParam("1", "0", "0"));
+            AnswerSetText(answerLabel, examData.getQuestion().getOptions());
+
+            // 改变颜色
+            changeButton(numberOneQuestion, numberTwoQuestion, numberThreeQuestion, numberFourQuestion,
+                    numberFiveQuestion, numberSixQuestion, numberSevenQuestion, numberEightQuestion,
+                    numberNineQuestion, numberTenQuestion );
+
+            try {
+                JlabelSetText(questionLabel, examData.getQuestion().getSubject());
+
+            } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    // 调用http服务
+    public ExamData getStart(Map<String, String> map) {
+        Examination e = new Examination();
+        String jsonString = e.doGet(map);
+        ExamData examData = Examination.JsonToObject(jsonString, ExamData.class);
+
+        // 全局变量赋值
+        questionIdMap.put(examData.getQuestion().getQuestionSort(),
+                Integer.toString(examData.getQuestion().getQuestionId()));
+        examId = examData.getExamId().toString();
+        return examData;
+    }
+
+    // 获取下一题
+    public ExamData getNext(Map<String, String> map) {
+        Examination e = new Examination();
+        String jsonString = e.nextGet(map);
+        ExamData examData = Examination.JsonToObject(jsonString, ExamData.class);
+
+        questionIdMap.put(examData.getQuestion().getQuestionSort(),
+                Integer.toString(examData.getQuestion().getQuestionId()));
+        return examData;
+    }
+
+    // 提交
+    public String getSubmit(Map<String, String> map) {
+        Examination e = new Examination();
+        String submitString = e.submitGet(map);
+        return submitString;
+    }
+
+    // 获取参数
+    public Map<String, String> getParam(String questionSort, String questionId, String answer) {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("userId", userId);
+        map.put("userID", userId);
+        map.put("userName", userName);
+        map.put("customId", ParameterOperate.extract("CurrentCustomID"));
+        map.put("customName", ParameterOperate.extract("CurrentProName"));
+
+        // 可变参数
+        map.put("questionSort", questionSort);
+        map.put("questionId", questionId);
+        map.put("answer", answer);
+
+        // 每一次调用参数更新当前题目位置
+        sort = Integer.valueOf(questionSort);
+
+        if (examId != null) {
+            map.put("examId", examId);
+        }
+        return map;
+    }
+
+    // 选项换行
+    public void AnswerSetText(JLabel Label, String options) {
+        StringBuilder builder = new StringBuilder("<html>");
+        builder.append(options);
+        builder.append("</html>");
+        Label.setText(builder.toString());
+    }
+
+    // 题目换行
+    public void JlabelSetText(JLabel Label, String longString) throws InterruptedException {
+        longString = "(第" + sort + "/10题)" + longString;
+        StringBuilder builder = new StringBuilder("<html>");
+        char[] chars = longString.toCharArray();
+        int start = 0;
+        int len = 0;
+        while (start + len < longString.length()) {
+            while (true) {
+                len = len + 1;
+                if (start + len > longString.length())
+                    break;
+            }
+            builder.append(chars, start, len - 1).append("<br/>");
+            start = start + len - 1;
+            len = 0;
+        }
+        builder.append(chars, start, longString.length() - start);
+        builder.append("</html>");
+        Label.setText(builder.toString());
+    }
+
+    // 已完成题目按钮颜色改变
+    public void changeButton(JButton numberOneQuestion, JButton numberTwoQuestion, JButton numberThreeQuestion,
+                             JButton numberFourQuestion, JButton numberFiveQuestion, JButton numberSixQuestion, JButton numberSevenQuestion,
+                             JButton numberEightQuestion, JButton numberNineQuestion, JButton numberTenQuestion) {
+        if (!answerMap.isEmpty()) {
+            becomeGRAY();
+            // 遍历key(questionSort)
+            for (String key : answerMap.keySet()) {
+                switch (Integer.valueOf(key)) {
+                    case 1:
+                        numberOneQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 2:
+                        numberTwoQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 3:
+                        numberThreeQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 4:
+                        numberFourQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 5:
+                        numberFiveQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 6:
+                        numberSixQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 7:
+                        numberSevenQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 8:
+                        numberEightQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 9:
+                        numberNineQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    case 10:
+                        numberTenQuestion.setBackground(new Color(37,102,68));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            becomeCYAN();
+        } else {
+            becomeGRAY();
+            //当前题号颜色变为黄色
+            becomeCYAN();
+        }
+
+    }
+    public void becomeGRAY() {
+        numberOneQuestion.setBackground(Color.LIGHT_GRAY);
+        numberTwoQuestion.setBackground(Color.LIGHT_GRAY);
+        numberThreeQuestion.setBackground(Color.LIGHT_GRAY);
+        numberFourQuestion.setBackground(Color.LIGHT_GRAY);
+        numberFiveQuestion.setBackground(Color.LIGHT_GRAY);
+        numberSixQuestion.setBackground(Color.LIGHT_GRAY);
+        numberSevenQuestion.setBackground(Color.LIGHT_GRAY);
+        numberEightQuestion.setBackground(Color.LIGHT_GRAY);
+        numberNineQuestion.setBackground(Color.LIGHT_GRAY);
+        numberTenQuestion.setBackground(Color.LIGHT_GRAY);
+    }
+
+    public void becomeCYAN() {
+        switch(sort) {
+            case 1:
+                numberOneQuestion.setBackground(Color.CYAN);
+                break;
+            case 2:
+                numberTwoQuestion.setBackground(Color.CYAN);
+                break;
+            case 3:
+                numberThreeQuestion.setBackground(Color.CYAN);
+                break;
+            case 4:
+                numberFourQuestion.setBackground(Color.CYAN);
+                break;
+            case 5:
+                numberFiveQuestion.setBackground(Color.CYAN);
+                break;
+            case 6:
+                numberSixQuestion.setBackground(Color.CYAN);
+                break;
+            case 7:
+                numberSevenQuestion.setBackground(Color.CYAN);
+                break;
+            case 8:
+                numberEightQuestion.setBackground(Color.CYAN);
+                break;
+            case 9:
+                numberNineQuestion.setBackground(Color.CYAN);
+                break;
+            case 10:
+                numberTenQuestion.setBackground(Color.CYAN);
+                break;
+            default:
+                break;
+        }
+    }
+    // 倒计时
+    public void timerStart(int period, int type, JLabel countDown,JButton submit) {
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                time--;
+                countDown.setText("剩时：" + String.valueOf(time / 60) + "分" + String.valueOf(time % 60) + "秒");
+                if (time == 0) {
+                    timer.cancel();
+                    //时间结束调用提交事件
+                    submit.doClick();
+                }
+            }
+        }, 0, period);
+    }
 }
+
