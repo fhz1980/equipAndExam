@@ -1,4 +1,4 @@
-package com.sznikola.hk;
+package com.sznikola.equipAndExam.util.hk;
 
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
@@ -34,6 +34,11 @@ public class HKDVRVideo {
 	FRealDataCallBack fRealDataCallBack;// 预览回调函数实现
 	NativeLong lPreviewHandle;// 预览句柄
 	FDecCallBack fDecCallBack;// 预览回调函数实现
+	static String saveVideo;// 保存视频的路径
+
+	public static String getSaveVideo() {
+		return saveVideo;
+	}
 
 	public HKDVRVideo() {
 		lUserID = new NativeLong(-1);
@@ -60,7 +65,8 @@ public class HKDVRVideo {
 		m_sDeviceIP = ip;
 		lUserID = hCNetSDK.NET_DVR_Login_V30(ip, (short) iPort, username, password, m_strDeviceInfo);
 		long userID = lUserID.longValue();
-		System.out.println("userid=" + userID);
+
+
 		// System.out.println(hCNetSDK.NET_DVR_GetLastError());
 		if (userID == -1) {
 			m_sDeviceIP = "";// 登录未成功,IP置为空
@@ -94,20 +100,14 @@ public class HKDVRVideo {
 			System.out.println(hCNetSDK.NET_DVR_GetLastError());
 			long previewSucValue = lPreviewHandle.longValue();
 
-			//如果没有文件则创建，保存在D://realData/result.mp4
-			File file = new File("D:\\realData");
-			if(!file.exists()){
-				file.mkdir();
-			}
-
-			String saveVideo = MessageFormat.format(".\\res\\temporaryvideo\\{0}.mp4", UUID.randomUUID().toString());
+			saveVideo = MessageFormat.format(".\\res\\temporaryvideo\\{0}.mp4", UUID.randomUUID().toString());
 
 			//预览成功后 调用接口使视频资源保存到文件中
-			if (!sdk.NET_DVR_SaveRealData_V30(lPreviewHandle, 2,saveVideo)) {
+			if (!sdk.NET_DVR_SaveRealData_V30(lPreviewHandle, 2, saveVideo)) {
 				return;
 			}
 			try {
-				Thread.sleep(6000);
+				Thread.sleep(2000);
 			}catch (Exception e){
 				e.printStackTrace();
 			}
@@ -116,7 +116,7 @@ public class HKDVRVideo {
 			sdk.NET_DVR_Logout(lUserID);
 			sdk.NET_DVR_Cleanup();
 			// 程序运行完毕退出阻塞状态
-			System.exit(0);
+//			System.exit(0);
 		}
 	}
 

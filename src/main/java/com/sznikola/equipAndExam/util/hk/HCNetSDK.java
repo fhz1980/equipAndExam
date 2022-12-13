@@ -14,7 +14,7 @@
  * @author Xubinfeng
  */
 
-package com.sznikola.hk;
+package com.sznikola.equipAndExam.util.hk;
 
 import com.sun.jna.*;
 import com.sun.jna.examples.win32.GDI32.RECT;

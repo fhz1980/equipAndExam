@@ -79,6 +79,7 @@ public class ExamFaceReg implements Runnable {
                 log.info(username);
             }
 
+            log.info("识别成功");
             EquipAndExamFrame.getInstance().getFaceClick().setText("识别成功");
             EquipAndExamFrame.vs.VoiceBroadcast("识别成功");
             EquipAndExamFrame.vs.VoiceBroadcast(name +",请开始考试");

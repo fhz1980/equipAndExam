@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
  * @data 2022-09-09  11:33
  */
 public class HttpService {
-    public static String allocateDuty(String url,String filePath,String idNum,String name,String sex ,String nation){
+    public static String allocateDuty(String url, String filePath, String idNum, String name, String sex , String nation){
         String result=null;
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {

@@ -34,7 +34,7 @@ public class CurrentViewCamera implements Runnable {
             deviceOperation();
         }else if(secondCamera == 1){
             while(true){
-
+                WebCamUse();
             }
         }else{
             EquipAndExamFrame.getInstance().getEquipInfoLabel().setText("未检测到你所需要的摄像头");
@@ -135,19 +135,7 @@ public class CurrentViewCamera implements Runnable {
     }
 
     //网络摄像头处
-//    private void WebCamOpen(){
-//        //加载xml模型
-//        String xmlFileName = null;
-//        try {
-//            xmlFileName = ResourceUtils.getFile("res/myopencv/lbpcascade_frontalface_improved.xml").getAbsolutePath();
-//        } catch (Exception e) {
-//            log.info(String.valueOf(e));
-//            throw new RuntimeException(e);
-//        }
-//        CascadeClassifier cascadeClassifier = new CascadeClassifier(xmlFileName);
-//        if (cascadeClassifier.empty()) {
-//            log.info("加载xml模型文件失败！");
-//            return;
-//        }
-//    }
+    private void WebCamUse(){
+
+    }
 }

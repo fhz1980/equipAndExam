@@ -5,18 +5,26 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.pdfbox.io.IOUtils;
+import org.opencv.videoio.VideoWriter;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Date;
 
 /**
  * @author yzh
@@ -75,7 +83,7 @@ public class HttpService {
         return result;
     }
 
-    //开始用户体验设备
+    //人脸识别，开始用户体验设备
     public static String faceFeas(String url, BufferedImage bufferedImage, String category,String categoryName) {
         String result = null;
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -139,23 +147,31 @@ public class HttpService {
     }
 
     //关闭用户体验设备
-    public static String closeFea(String url, String name, String category) {
+//    public static String closeDevice(String url, Long id, String name, String username, String facePhoto, Date startTime, String video, String category, String categoryName) {
+    public static String closeDevice(String url, Integer id, String name, String video, String category, String categoryName){
         String result = null;
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
             HttpPost httppost = new HttpPost(url);  //将url的值赋值给httppost
             RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(200000).setSocketTimeout(200000).build();
             httppost.setConfig(requestConfig);  //将Post请求赋值给requestConfig
-            StringBody strName = new StringBody(name, Charset.forName("UTF-8"));
-            StringBody strCategory = new StringBody(category, Charset.forName("UTF-8"));
+            File file = new File(video);
+            FileInputStream input = new FileInputStream(file);
+            FileBody bin = new FileBody(file);
+//            StringBody strId = new StringBody(String.valueOf(id), Charset.forName("UTF-8"));
+//            StringBody strCategory = new StringBody(category, Charset.forName("UTF-8"));
+//            StringBody strCategoryName = new StringBody(categoryName, Charset.forName("UTF-8"));
+//            StringBody strName = new StringBody(name, Charset.forName("UTF-8"));
+//            StringBody strVideo = new StringBody(video,Charset.forName("UTF-8"));
 //            HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("fileName", bin).build();
 
             MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
-//         multipartEntityBuilder.setCharset(Charset.forName("utf-8"));
             multipartEntityBuilder.setCharset(Charset.forName("utf-8"));
-            multipartEntityBuilder.addPart("category",strCategory);
-            multipartEntityBuilder.addPart("name",strName);
-//            multipartEntityBuilder.addPart("video",strVideo);
+//            multipartEntityBuilder.addPart("id",strId);
+//            multipartEntityBuilder.addPart("category",strCategory);
+//            multipartEntityBuilder.addPart("categoryName", strCategoryName);
+//            multipartEntityBuilder.addPart("name",strName);
+            multipartEntityBuilder.addPart("file",bin);
 
             HttpEntity reqEntity = multipartEntityBuilder.build();
 

@@ -751,23 +751,32 @@ public class EquipAndExamFrame extends JFrame {
                                                 public void actionPerformed(ActionEvent e) {
                                                     startExamBtn.setVisible(false);
                                                     executorService.submit(new ExamFaceReg());
-                                                    ExecutorService singerExecutorService = Executors.newSingleThreadExecutor();
-                                                    singerExecutorService.submit(new Runnable() {
+                                                    ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
+                                                    newCachedThreadPool.submit(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            boolean flag = true;
-                                                            while(flag) {
-                                                                if (EquipAndExamFrame.getInstance().getFaceClick().getText().equals("识别成功")) {
-                                                                    ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
-                                                                    setUserId(ExamFaceReg.username);
-                                                                    setUserName(ExamFaceReg.name);
-                                                                    examineesNameLabel.setText(getUserName());
-                                                                    EquipAndExamFrame.getInstance().getFaceClick().setText(" ");
-                                                                    EquipAndExamFrame.getInstance().getStartExamBtn().setVisible(true);
-                                                                    singerExecutorService.shutdown();
-                                                                    flag = false;
-                                                                }
+                                                            log.info("线程开启");
+                                                            while(!(faceClick.getText()).equals("识别成功")) {
+                                                                System.out.println("循环");
+//                                                                if ((faceClick.getText()).equals("识别成功")) {
+//                                                                    log.info("开始考试");
+//                                                                    ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
+//                                                                    setUserId(ExamFaceReg.username);
+//                                                                    setUserName(ExamFaceReg.name);
+//                                                                    examineesNameLabel.setText(getUserName());
+//                                                                    faceClick.setText(" ");
+//                                                                    startExamBtn.setVisible(true);
+//                                                                    newCachedThreadPool.shutdown();
+//                                                                }
                                                             }
+                                                            log.info("开始考试");
+                                                            ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
+                                                            setUserId(ExamFaceReg.username);
+                                                            setUserName(ExamFaceReg.name);
+                                                            examineesNameLabel.setText(getUserName());
+                                                            faceClick.setText(" ");
+                                                            startExamBtn.setVisible(true);
+                                                            newCachedThreadPool.shutdown();
                                                         }
                                                     });
                                                 }
@@ -1342,6 +1351,7 @@ public class EquipAndExamFrame extends JFrame {
             this.submit = submit;
         }
 
+        //点击触发倒计时事件
         @Override
         public void actionPerformed(ActionEvent e) {
 
@@ -1481,11 +1491,13 @@ public class EquipAndExamFrame extends JFrame {
         }
 
     }
+    //设置题目颜色
     public void becomeGRAY() {
         numberOneQuestion.setBackground(Color.LIGHT_GRAY);
         numberTwoQuestion.setBackground(Color.LIGHT_GRAY);
     }
 
+    //设置题目颜色
     public void becomeCYAN() {
         switch(sort) {
             case 1:

@@ -5,6 +5,7 @@ import com.sznikola.equipAndExam.common.ResultJson;
 import com.sznikola.equipAndExam.frame.EquipAndExamFrame;
 import com.sznikola.equipAndExam.util.ParameterOperate;
 import com.sznikola.equipAndExam.util.UploadUtil;
+import com.sznikola.equipAndExam.util.hk.HKDVRVideo;
 import gnu.io.CommPortIdentifier;
 import lombok.extern.slf4j.Slf4j;
 import org.opencv.core.Core;
@@ -95,16 +96,19 @@ public class USBOperateDevice implements Runnable {
 //            faceLookImageLabel.setIcon(faceoBlueIcon);
             //人脸识别成功
             //拿取服务端数据
+            Integer id = null;
             String name = null;
-            String username = null;
+            String categoryName = null;
+
 
             if ((data instanceof Map) && Objects.nonNull(data)) {
                 Map<String, Object> d = (Map) data;
+                id = (Integer) d.get("id");
                 name = (String) d.get("name");
-                username = (String) d.get("username");
-                log.info(username);
+                categoryName = (String) d.get("categoryName");
+                log.info(name);
             }
-            String categoryName = ParameterOperate.extract("categoryName");
+//            String categoryName = ParameterOperate.extract("categoryName");
             EquipAndExamFrame.getInstance().getEquipInfoLabel().setText(name + "，正在体验设备" + categoryName);
             EquipAndExamFrame.vs.VoiceBroadcast(name +",请体验" + categoryName);
             EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoBlueIcon());
@@ -120,10 +124,22 @@ public class USBOperateDevice implements Runnable {
                 throw new RuntimeException(e);
             }
 
-            String saveVideo = MessageFormat.format(".\\res\\temporaryimg\\{0}.mp4", UUID.randomUUID().toString());
+//            String saveVideo = MessageFormat.format(".\\res\\temporaryimg\\{0}.mp4", UUID.randomUUID().toString());
             String savePic = MessageFormat.format(".\\res\\temporaryimg\\{0}.jpg", UUID.randomUUID().toString());
 
-            final VideoWriter videoWriter = new VideoWriter(saveVideo, VideoWriter.fourcc('m', 'p', '4', 'v'), 30, new Size(EquipAndExamFrame.camerabgSize, EquipAndExamFrame.camerabgSize));
+//            final VideoWriter videoWriter = new VideoWriter(saveVideo, VideoWriter.fourcc('m', 'p', '4', 'v'), 30, new Size(EquipAndExamFrame.camerabgSize, EquipAndExamFrame.camerabgSize));
+
+            //网络摄像头保存两秒的操作视频
+            HKDVRVideo bt = new HKDVRVideo();
+            String ip = ParameterOperate.extract("ip");
+            int port = Integer.parseInt(ParameterOperate.extract("port"));
+            String videoUserename = ParameterOperate.extract("videoUsername");
+            String videoPassword = ParameterOperate.extract("videoPassword");
+            int channel = Integer.parseInt(ParameterOperate.extract("channel"));
+            bt.getVideo(ip, port, videoUserename,videoPassword, channel);
+
+            //获取网络摄像头存储路径
+            String saveVideo = HKDVRVideo.getSaveVideo();
 
             //拍照
             boolean b;
@@ -141,7 +157,7 @@ public class USBOperateDevice implements Runnable {
                 photo.delete();
             }
             //保存信息
-            String st = EquipAndExamFrame.fs.judgeCloseData(name, "UserCloseDevice");
+            String st = EquipAndExamFrame.fs.judgeCloseData(id, name, saveVideo,"UserCloseDevice");
             //关闭
             EquipAndExamFrame.vs.VoiceBroadcast("体验结束");
             EquipAndExamFrame.getInstance().getEquipInfoLabel().setText("请体验");

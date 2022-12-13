@@ -38,7 +38,7 @@ public class USBCameraVideo {
   }
 
   @SneakyThrows
-  public boolean uSBCameraUse(String userCode) {
+  public boolean USBCameraUse(String userCode) {
     System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
     String saveVideo = MessageFormat.format(".\\res\\temporaryimg\\{0}.mp4", UUID.randomUUID().toString());
@@ -102,8 +102,6 @@ public class USBCameraVideo {
       return false;
     }
     //后传给服务器
-
-
 
     return true;
   }

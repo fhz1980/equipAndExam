@@ -55,15 +55,16 @@ public class FaceService {
         return  HttpService.faceFeas(url, image, category, categoryName);
     }
 
-    public  String judgeCloseData(String name, String impl){
+    public  String judgeCloseData(Integer id, String name, String video, String impl){
         //签到系统的路径
         String userCloseJudge = MessageFormat.format("{0}{1}","/train/experiencedevice/",impl);
 
         String mainService = ParameterOperate.extract("mainService");
         //将接口的url加入进去
         String url = MessageFormat.format("{0}{1}", mainService, userCloseJudge);
-        String category =ParameterOperate.extract("category");
-        return  HttpService.closeFea(url, name, category);
+        String category = ParameterOperate.extract("category");
+        String categoryName = ParameterOperate.extract("categoryName");
+        return  HttpService.closeDevice(url, id, name, video, category, categoryName);
     }
 
     // fs.mat2BI() 输入Mat 返回Mat中存放的图片（进行了一些处理）
