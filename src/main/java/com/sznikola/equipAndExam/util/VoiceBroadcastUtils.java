@@ -23,7 +23,8 @@ public class VoiceBroadcastUtils {
             // 音量 0-100
             sap.setProperty("Volume", new Variant(100));
             // 语音朗读速度 -10 到 +10
-            sap.setProperty("Rate", new Variant(-2));
+//            sap.setProperty("Rate", new Variant(-2));
+            sap.setProperty("Rate", new Variant(-1));
 
             Variant defalutVoice = sap.getProperty("Voice");
 

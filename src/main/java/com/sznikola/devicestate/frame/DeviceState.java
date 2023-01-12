@@ -215,8 +215,9 @@ public class DeviceState extends JFrame {
         //======== contentPanel ========
         {
             contentPanel.setBackground(new Color(0xfbfbfb));
-            contentPanel.setPreferredSize(new Dimension(1024, 768));
-            contentPanel.setBorder(new EmptyBorder(12, 12, 12, 12));
+            contentPanel.setPreferredSize(new Dimension(1024, 698));
+//            contentPanel.setBorder(new EmptyBorder(12, 12, 12, 12));
+            contentPanel.setBorder(new EmptyBorder(0,12,0,12));
             contentPanel.setLayout(new BorderLayout());
 
             //======== panel1 ========
@@ -265,7 +266,7 @@ public class DeviceState extends JFrame {
                                 equipNameLabel.setForeground(examColor);
                                 equipNameLabel.setBorder(new EmptyBorder(3, 8, 3, 3));
                                 equipNameLabel.setBackground(new Color(0xfbfbfb));
-                                equipNameLabel.setFont(new Font("\u9ed1\u4f53", Font.PLAIN, 20));
+                                equipNameLabel.setFont(new Font("黑体", Font.PLAIN, 18));
                                 equipFlowPanel.add(equipNameLabel);
 
 
@@ -307,7 +308,8 @@ public class DeviceState extends JFrame {
                                         {
                                             equipCameraFPanel.setBackground(new Color(0xfbfbfb));
                                             equipCameraFPanel.setLayout(new FlowLayout());
-                                            equipCameraFPanel.setBorder(new EmptyBorder(20, 20, 0, 20));
+//                                            equipCameraFPanel.setBorder(new EmptyBorder(20, 20, 0, 20));
+                                            equipCameraFPanel.setBorder(new EmptyBorder(0,20,0,20));
 
                                             //---- equipCameraLabel ----
                                             equipCameraLabel.setForeground(examColor);
@@ -334,7 +336,7 @@ public class DeviceState extends JFrame {
                                                 equipInfoLabel.setText(" ");
                                                 equipInfoLabel.setForeground(examColor);
                                                 equipInfoLabel.setForeground(Color.black);
-                                                equipInfoLabel.setFont(new Font("\u7b49\u7ebf", Font.PLAIN, 18));
+                                                equipInfoLabel.setFont(new Font("\u7b49\u7ebf", Font.PLAIN, 16));
                                                 equipInfoFpanel.add(equipInfoLabel);
 
                                                 //======= messageLeftButton =======
@@ -385,14 +387,15 @@ public class DeviceState extends JFrame {
                                                 {
                                                     nameFPanel.setBackground(new Color(0xfbfbfb));
                                                     nameFPanel.setLayout(new FlowLayout());
-                                                    nameFPanel.setBorder(new EmptyBorder(10, 0, 5, 0));
+//                                                    nameFPanel.setBorder(new EmptyBorder(10, 0, 5, 0));
 
                                                     //---- nameLabel ----
                                                     //---- clickEquipLabel ----
                                                     startOpenBtn.setText("开启全部设备");
                                                     startOpenBtn.setBackground(Color.WHITE);
                                                     startOpenBtn.setContentAreaFilled(true);
-                                                    startOpenBtn.setMargin(new Insets(10, 10, 10, 10));
+//                                                    startOpenBtn.setMargin(new Insets(10, 10, 10, 10));
+                                                    startOpenBtn.setMargin(new Insets(5, 5, 5, 5));
                                                     startOpenBtn.setFocusPainted(false);
                                                     startOpenBtn.addActionListener(new ActionListener() {
                                                         public void actionPerformed(ActionEvent e) {
@@ -412,7 +415,7 @@ public class DeviceState extends JFrame {
                                                     usernamePanel.setBackground(new Color(0xfbfbfb));
                                                     usernamePanel.setLayout(new BorderLayout());
                                                 }
-                                                namePanel.add(usernamePanel, BorderLayout.CENTER);
+                                                namePanel.add(usernamePanel, BorderLayout.SOUTH);
                                             }
                                             equipInfopanel.add(namePanel, BorderLayout.CENTER);
                                         }

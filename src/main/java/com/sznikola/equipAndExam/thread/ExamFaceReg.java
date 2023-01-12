@@ -7,6 +7,7 @@ import com.sznikola.equipAndExam.frame.EquipAndExamFrame;
 import com.sznikola.equipAndExam.util.UploadUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class ExamFaceReg implements Runnable {
         EquipAndExamFrame.getInstance().getFaceClick().setText("正在检测人脸");
         EquipAndExamFrame.vs.VoiceBroadcast("正在检测人脸");
         //2.人脸识别
-        String s = EquipAndExamFrame.fs.judgeMemberData(EquipAndExamFrame.bi1, "userJudge");
+        String s = EquipAndExamFrame.fs.judgeUserData(EquipAndExamFrame.bi1, "userJudge");
         if (Objects.isNull(s) ||"".equals(s)) {
             log.info("系统与服务器断开连接，请重试");
             EquipAndExamFrame.getInstance().getFaceClick().setText("系统与服务器断开连接，请重试");
@@ -76,14 +77,16 @@ public class ExamFaceReg implements Runnable {
                 Map<String, Object> d = (Map) data;
                 name = (String) d.get("name");
                 username = (String) d.get("username");
+                EquipAndExamFrame.getInstance().setUserId(username);
+                EquipAndExamFrame.getInstance().setUserName(name);
                 log.info(username);
             }
 
             log.info("识别成功");
             EquipAndExamFrame.getInstance().getFaceClick().setText("识别成功");
-            EquipAndExamFrame.vs.VoiceBroadcast("识别成功");
-            EquipAndExamFrame.vs.VoiceBroadcast(name +",请开始考试");
-            EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoBlueIcon());
+//            EquipAndExamFrame.vs.VoiceBroadcast("识别成功");
+            EquipAndExamFrame.vs.VoiceBroadcast("开始考试");
+//            EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoBlueIcon());
 
             boolean flag = true;
             long pre = System.currentTimeMillis();

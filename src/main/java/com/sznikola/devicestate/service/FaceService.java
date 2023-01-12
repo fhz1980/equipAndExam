@@ -1,6 +1,6 @@
 package com.sznikola.devicestate.service;
 
-import com.sznikola.devicestate.frame.ParameterOperate;
+import com.sznikola.equipAndExam.util.ParameterOperate;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -31,42 +31,55 @@ public class FaceService {
 
     }
 
-    public String allocateDuty(String filename,String idnum ,String name,String sex ,String nation) {
-        return HttpService.allocateDuty(ParameterOperate.extract("mainServiceIDCard"), filename,idnum ,name,sex ,nation);
-    }
-
-    //开启设备
     public String judgeMemberData(BufferedImage image, String impl) throws RuntimeException{
         //签到系统的路径
+//        String userJudge = MessageFormat.format("{0}{1}","/common/datacollect/",impl);
         String userJudge = MessageFormat.format("{0}{1}","/train/devicestate/",impl);
 
         String mainService = ParameterOperate.extract("mainService");
-
-        //自动添加/
-//        if(!mainService.endsWith("/")){
-//            mainService += "/";
-//        }
         //将接口的url加入进去
         String url = MessageFormat.format("{0}{1}", mainService, userJudge);
         // 将人脸识别出来的图片传给服务器进行判断
         return  HttpService.faceFea(url, image);
     }
 
-    //关闭设备
-    public String judgeMemberCloseData(BufferedImage image, String impl) throws RuntimeException{
+    public String judgeUserData(BufferedImage image, String impl) throws RuntimeException{
         //签到系统的路径
-        String userJudge = MessageFormat.format("{0}{1}","/train/devicestate/",impl);
+        String userJudge = MessageFormat.format("{0}{1}","/common/datacollect/",impl);
 
         String mainService = ParameterOperate.extract("mainService");
-
-        //自动添加/
-//        if(!mainService.endsWith("/")){
-//            mainService += "/";
-//        }
         //将接口的url加入进去
         String url = MessageFormat.format("{0}{1}", mainService, userJudge);
+        String category =ParameterOperate.extract("category");
+        String categoryName = ParameterOperate.extract("categoryName");
         // 将人脸识别出来的图片传给服务器进行判断
-        return  HttpService.faceFea(url, image);
+        return  com.sznikola.devicestate.service.HttpService.faceFea(url, image);
+    }
+
+    public String judgeOpenData(BufferedImage image, String impl) throws RuntimeException{
+        //签到系统的路径
+        String userJudge = MessageFormat.format("{0}{1}","/train/experiencedevice/",impl);
+
+        String mainService = ParameterOperate.extract("mainService");
+        //将接口的url加入进去
+        String url = MessageFormat.format("{0}{1}", mainService, userJudge);
+        String category =ParameterOperate.extract("category");
+        String categoryName = ParameterOperate.extract("categoryName");
+        // 将人脸识别出来的图片传给服务器进行判断
+        return  com.sznikola.devicestate.service.HttpService.openDevice(url, image, category, categoryName);
+    }
+
+
+    public  String judgeCloseData(Integer id, String name, String video, String impl){
+        //签到系统的路径
+        String userCloseJudge = MessageFormat.format("{0}{1}","/train/experiencedevice/",impl);
+
+        String mainService = ParameterOperate.extract("mainService");
+        //将接口的url加入进去
+        String url = MessageFormat.format("{0}{1}", mainService, userCloseJudge);
+        String category = ParameterOperate.extract("category");
+        String categoryName = ParameterOperate.extract("categoryName");
+        return  HttpService.closeDevice(url, id, name, video, category, categoryName);
     }
 
     // fs.mat2BI() 输入Mat 返回Mat中存放的图片（进行了一些处理）

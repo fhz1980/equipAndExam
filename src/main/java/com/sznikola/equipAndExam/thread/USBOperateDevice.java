@@ -6,19 +6,14 @@ import com.sznikola.equipAndExam.frame.EquipAndExamFrame;
 import com.sznikola.equipAndExam.util.ParameterOperate;
 import com.sznikola.equipAndExam.util.UploadUtil;
 import com.sznikola.equipAndExam.util.hk.HKDVRVideo;
-import gnu.io.CommPortIdentifier;
 import lombok.extern.slf4j.Slf4j;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.videoio.VideoWriter;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static com.sznikola.equipAndExam.common.RecStatus.*;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
@@ -39,11 +34,14 @@ public class USBOperateDevice implements Runnable {
         EquipAndExamFrame.getInstance().getClickEquipImageLabel().setIcon(EquipAndExamFrame.getInstance().getEquipRedIcon());
         //2.人脸识别
         log.info("经过了USB");
+        EquipAndExamFrame.vs.VoiceBroadcast("请正对摄像头");
         EquipAndExamFrame.getInstance().getEquipInfoLabel().setText("正在检测人脸");
+        Date time = new Date();
+        System.out.println(time);
         String say = "正在检测人脸";
 
-        EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoRedIcon());
-        EquipAndExamFrame.vs.VoiceBroadcast("请正对摄像头");
+
+//        EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoRedIcon());
         EquipAndExamFrame.vs.VoiceBroadcast(say);
         try {
             Thread.sleep(1000);
@@ -51,7 +49,7 @@ public class USBOperateDevice implements Runnable {
             throw new RuntimeException(e);
         }
 //        String s = EquipAndExamFrame.fs.judgeMemberData(EquipAndExamFrame.bi2, "userJudge");
-        String s = EquipAndExamFrame.fs.judgeUserData(EquipAndExamFrame.bi2,"userJudge");
+        String s = EquipAndExamFrame.fs.judgeOpenData(EquipAndExamFrame.bi2,"userJudge");
         if (Objects.isNull(s) ||"".equals(s)) {
             log.info("系统与服务器断开连接，请重试");
             EquipAndExamFrame.getInstance().getEquipInfoLabel().setText("系统与服务器断开连接，请重试");
@@ -106,12 +104,15 @@ public class USBOperateDevice implements Runnable {
                 id = (Integer) d.get("id");
                 name = (String) d.get("name");
                 categoryName = (String) d.get("categoryName");
+
                 log.info(name);
             }
 //            String categoryName = ParameterOperate.extract("categoryName");
             EquipAndExamFrame.getInstance().getEquipInfoLabel().setText(name + "，正在体验设备" + categoryName);
+            Date date = new Date();
+            System.out.println(date);
             EquipAndExamFrame.vs.VoiceBroadcast(name +",请体验" + categoryName);
-            EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoBlueIcon());
+//            EquipAndExamFrame.getInstance().getFaceLookImageLabel().setIcon(EquipAndExamFrame.getInstance().getFaceoBlueIcon());
 
             boolean flag = true;
             long pre = System.currentTimeMillis();

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sznikola.devicestate.frame.DeviceState;
 import com.sznikola.devicestate.frame.DeviceStateClosed;
-import com.sznikola.devicestate.frame.service.FaceService;
 import com.sznikola.devicestate.service.Examination;
+import com.sznikola.devicestate.service.FaceService;
 import com.sznikola.equipAndExam.common.ExamData;
 import com.sznikola.equipAndExam.thread.CurrentViewCamera;
 import com.sznikola.equipAndExam.thread.ExamFace;
@@ -36,6 +36,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Timer;
@@ -117,14 +119,14 @@ public class EquipAndExamFrame extends JFrame {
     private JLabel equipNameLabel;
     private JPanel clickEquipPanel;
     private JPanel clickEquipFPanel;
-    private JLabel clickEquipLabel;
+//    private JLabel clickEquipLabel;
     private JLabel clickEquipImageLabel;
     private JButton clickStartButton;
     private JButton clickStartButton2;
     private JPanel faceLookPanel;
     private JPanel faceLookFPanel;
-    private JLabel faceLookLabel;
-    private JLabel faceLookImageLabel;
+//    private JLabel faceLookLabel;
+//    private JLabel faceLookImageLabel;
     private JPanel equipCameraPanel;
     private JPanel equipCameraFPanel;
     private JLabel equipCameraLabel;
@@ -157,7 +159,7 @@ public class EquipAndExamFrame extends JFrame {
     private JLabel examineesNameLabel;
     private JPanel countDownAndButton;
     private JLabel countDown;
-    private JButton startBtn;
+//    private JButton startBtn;
     private JLabel label1;
     private JButton submit;
     private JPanel questionAndAnswerPanel;
@@ -235,7 +237,6 @@ public class EquipAndExamFrame extends JFrame {
 
     public void setUserId(String userId) {
         this.userId = userId;
-
     }
 
     public String getUserName() {
@@ -260,14 +261,14 @@ public class EquipAndExamFrame extends JFrame {
         closeEquipBtn = new JButton();
         clickEquipPanel = new JPanel();
         clickEquipFPanel = new JPanel();
-        clickEquipLabel = new JLabel();
+//        clickEquipLabel = new JLabel();
         clickEquipImageLabel = new JLabel();
         clickStartButton = new JButton();
         clickStartButton2 = new JButton();
         faceLookPanel = new JPanel();
         faceLookFPanel = new JPanel();
-        faceLookLabel = new JLabel();
-        faceLookImageLabel = new JLabel();
+//        faceLookLabel = new JLabel();
+//        faceLookImageLabel = new JLabel();
         equipCameraPanel = new JPanel();
         equipCameraFPanel = new JPanel();
         equipCameraLabel = new JLabel();
@@ -322,7 +323,7 @@ public class EquipAndExamFrame extends JFrame {
         examineesNameLabel = new JLabel();
         countDownAndButton = new JPanel();
         countDown = new JLabel();
-        startBtn = new JButton();
+//        startBtn = new JButton();
         label1 = new JLabel();
         submit = new JButton();
         questionAndAnswerPanel = new JPanel();
@@ -349,8 +350,9 @@ public class EquipAndExamFrame extends JFrame {
         //======== contentPanel ========
         {
             contentPanel.setBackground(new Color(0xfbfbfb));
-            contentPanel.setPreferredSize(new Dimension(1024, 768));
-            contentPanel.setBorder(new EmptyBorder(12, 20, 12, 12));
+            contentPanel.setPreferredSize(new Dimension(1024, 698));
+//            contentPanel.setBorder(new EmptyBorder(12, 20, 12, 12));
+            contentPanel.setBorder(new EmptyBorder(0,20,0,12));
             contentPanel.setLayout(new BorderLayout());
 
             //======== panel1 ========
@@ -401,7 +403,7 @@ public class EquipAndExamFrame extends JFrame {
                                 equipNameLabel.setForeground(examColor);
                                 equipNameLabel.setBorder(new EmptyBorder(3, 8, 3, 3));
                                 equipNameLabel.setBackground(new Color(0xfbfbfb));
-                                equipNameLabel.setFont(new Font("黑体", Font.PLAIN, 20));
+                                equipNameLabel.setFont(new Font("黑体", Font.PLAIN, 18));
                                 equipFlowPanel.add(equipNameLabel);
                             }
                             equipPanel.add(equipFlowPanel, BorderLayout.NORTH);
@@ -468,7 +470,7 @@ public class EquipAndExamFrame extends JFrame {
                                                 equipInfoLabel.setText("请体验");
                                                 equipInfoLabel.setForeground(examColor);
                                                 equipInfoLabel.setForeground(Color.black);
-                                                equipInfoLabel.setFont(new Font("等线", Font.PLAIN, 18));
+                                                equipInfoLabel.setFont(new Font("等线", Font.PLAIN, 16));
                                                 equipInfoFpanel.add(equipInfoLabel);
 
                                                 //======= messageLeftButton =======
@@ -524,30 +526,33 @@ public class EquipAndExamFrame extends JFrame {
                                                 {
                                                     nameFPanel.setBackground(new Color(0xfbfbfb));
                                                     nameFPanel.setLayout(new FlowLayout());
-                                                    nameFPanel.setBorder(new EmptyBorder(50, 0, 10, 0));
+//                                                    nameFPanel.setBorder(new EmptyBorder(50, 0, 10, 0));
+                                                    nameFPanel.setBorder(new EmptyBorder(110, 0, 0, 0));
 
                                                     //---- nameLabel ----
                                                     //---- clickEquipLabel ----
-                                                    clickEquipLabel.setText("1、按下设备旁体验按钮");
-                                                    clickEquipLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
-                                                    clickEquipLabel.setForeground(examColor);
-                                                    clickEquipLabel.setBackground(new Color(0xfbfbfb));
-                                                    clickEquipLabel.setFont(new Font("等线", Font.PLAIN, 26));
-
-                                                    nameFPanel.add(clickEquipLabel);
+//                                                    clickEquipLabel.setText("点击按钮");
+//                                                    clickEquipLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
+//                                                    clickEquipLabel.setForeground(examColor);
+//                                                    clickEquipLabel.setBackground(new Color(0xfbfbfb));
+//                                                    clickEquipLabel.setFont(new Font("等线", Font.PLAIN, 26));
+//
+//                                                    nameFPanel.add(clickEquipLabel);
 
                                                     //---- clickEquipImageLabel ----
-                                                    clickEquipImageLabel.setIcon(equipBlueIcon);
-                                                    clickEquipImageLabel.setBackground(new Color(0xfbfbfb));
-                                                    clickEquipImageLabel.setAutoscrolls(true);
-                                                    clickEquipImageLabel.setBorder(new EmptyBorder(2, 3, 0, 0));
+//                                                    clickEquipImageLabel.setIcon(equipBlueIcon);
+//                                                    clickEquipImageLabel.setBackground(new Color(0xfbfbfb));
+//                                                    clickEquipImageLabel.setAutoscrolls(true);
+//                                                    clickEquipImageLabel.setBorder(new EmptyBorder(2, 3, 0, 0));
 //                                                    nameFPanel.add(clickEquipImageLabel);
 
                                                     //---- clickStartButton ----
-                                                    clickStartButton.setIcon(equipBlueIcon);
+//                                                    clickStartButton.setIcon(equipBlueIcon);
+                                                    clickStartButton.setText("记录体验");
+                                                    clickStartButton.setToolTipText("记录体验");
                                                     clickStartButton.setBackground(Color.WHITE);
                                                     clickStartButton.setContentAreaFilled(true);
-                                                    clickStartButton.setMargin(new Insets(3, 3, 3, 3));
+                                                    clickStartButton.setMargin(new Insets(5, 8, 5, 8));
                                                     clickStartButton.setFocusPainted(false);
                                                     clickStartButton.addActionListener(new ActionListener() {
                                                         public void actionPerformed(ActionEvent e) {
@@ -565,11 +570,14 @@ public class EquipAndExamFrame extends JFrame {
 
 
                                                     //---- clickStartButton ----
-                                                    clickStartButton2.setIcon(equipRedIcon);
+//                                                    clickStartButton2.setIcon(equipRedIcon);
+                                                    clickStartButton2.setText("记录体验");
+                                                    clickStartButton2.setToolTipText("记录体验");
+                                                    clickStartButton2.setForeground(Color.red);
                                                     clickStartButton2.setBackground(Color.WHITE);
                                                     clickStartButton2.setContentAreaFilled(true);
                                                     clickStartButton2.setVisible(false);
-                                                    clickStartButton2.setMargin(new Insets(3, 3, 3, 3));
+                                                    clickStartButton2.setMargin(new Insets(5, 8, 5, 8));
                                                     clickStartButton2.setFocusPainted(false);
                                                     clickStartButton2.addActionListener(new ActionListener() {
                                                         public void actionPerformed(ActionEvent e) {
@@ -598,16 +606,16 @@ public class EquipAndExamFrame extends JFrame {
 
                                                         //---- usernameLabel ----
                                                         //---- faceLookLabel ----
-                                                        faceLookLabel.setText("2、人脸识别记录体验");
-                                                        faceLookLabel.setForeground(examColor);
-                                                        faceLookLabel.setFont(new Font("等线", Font.PLAIN, 26));
-                                                        usernameFpanel.add(faceLookLabel);
+//                                                        faceLookLabel.setText("2、人脸识别记录体验");
+//                                                        faceLookLabel.setForeground(examColor);
+//                                                        faceLookLabel.setFont(new Font("等线", Font.PLAIN, 26));
+//                                                        usernameFpanel.add(faceLookLabel);
 
                                                         //---- faceLookImageLabel ----
-                                                        faceLookImageLabel.setForeground(examColor);
-                                                        faceLookImageLabel.setIcon(faceoBlueIcon);
-                                                        faceLookImageLabel.setBorder(new EmptyBorder(0, 3, 0, 0));
-                                                        usernameFpanel.add(faceLookImageLabel);
+//                                                        faceLookImageLabel.setForeground(examColor);
+//                                                        faceLookImageLabel.setIcon(faceoBlueIcon);
+//                                                        faceLookImageLabel.setBorder(new EmptyBorder(0, 3, 0, 0));
+//                                                        usernameFpanel.add(faceLookImageLabel);
                                                     }
                                                     usernamePanel.add(usernameFpanel, BorderLayout.NORTH);
                                                 }
@@ -659,7 +667,7 @@ public class EquipAndExamFrame extends JFrame {
                                         examNameLabel.setText("知识考核区");
                                         examNameLabel.setForeground(examColor);
                                         examNameLabel.setBorder(new EmptyBorder(3, 8, 3, 3));
-                                        examNameLabel.setFont(new Font("黑体", Font.PLAIN, 20));
+                                        examNameLabel.setFont(new Font("黑体", Font.PLAIN, 18));
                                         examNameFPanel.add(examNameLabel);
                                     }
                                     leftAndRightBox.add(examNameFPanel);
@@ -673,7 +681,7 @@ public class EquipAndExamFrame extends JFrame {
                                         closeEquipBtn.setText("关闭设备");
                                         closeEquipBtn.setBackground(Color.WHITE);
                                         closeEquipBtn.setContentAreaFilled(true);
-                                        closeEquipBtn.setMargin(new Insets(4, 8, 4, 8));
+                                        closeEquipBtn.setMargin(new Insets(3, 8, 2, 8));
                                         closeEquipBtn.setFocusPainted(false);
                                         closeEquipBtn.addActionListener(new ActionListener() {
                                             public void actionPerformed(ActionEvent e) {
@@ -736,7 +744,7 @@ public class EquipAndExamFrame extends JFrame {
 
                                             //---- faceClick ----
                                             faceClick.setText(" ");
-                                            faceClick.setFont(new Font("等线", Font.PLAIN, 25));
+                                            faceClick.setFont(new Font("等线", Font.PLAIN, 16));
                                             examStartFPanel.add(faceClick);
 
                                             startExamBtn.setContentAreaFilled(false);
@@ -744,20 +752,24 @@ public class EquipAndExamFrame extends JFrame {
                                             startExamBtn.setText("开始考试");
                                             startExamBtn.setBackground(Color.WHITE);
                                             startExamBtn.setContentAreaFilled(true);
-                                            startExamBtn.setMargin(new Insets(10, 10, 10, 10));
+//                                            startExamBtn.setMargin(new Insets(10, 10, 10, 10));
+                                            startExamBtn.setMargin(new Insets(5, 8, 5, 8));
                                             startExamBtn.setFocusPainted(false);
                                             examStartFPanel.add(startExamBtn);
                                             startExamBtn.addActionListener(new ActionListener() {
                                                 public void actionPerformed(ActionEvent e) {
-                                                    startExamBtn.setVisible(false);
+//                                                    if() {
+                                                        startExamBtn.setVisible(false);
+//
+                                                    //人脸识别线程
                                                     executorService.submit(new ExamFaceReg());
                                                     ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
+                                                    //人脸识别成功运行的线程
                                                     newCachedThreadPool.submit(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            log.info("线程开启");
+                                                            log.info("考试线程开启");
                                                             while(!(faceClick.getText()).equals("识别成功")) {
-                                                                System.out.println("循环");
 //                                                                if ((faceClick.getText()).equals("识别成功")) {
 //                                                                    log.info("开始考试");
 //                                                                    ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
@@ -769,13 +781,17 @@ public class EquipAndExamFrame extends JFrame {
 //                                                                    newCachedThreadPool.shutdown();
 //                                                                }
                                                             }
-                                                            log.info("开始考试");
+                                                            log.info("考试页面");
+                                                            //界面跳转
                                                             ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
-                                                            setUserId(ExamFaceReg.username);
-                                                            setUserName(ExamFaceReg.name);
+//                                                            flag_start = 1;
+//                                                            setUserId(ExamFaceReg.username);
+//                                                            log.info(getUserId());
+//                                                            setUserName(ExamFaceReg.name);
+//                                                            log.info(getUserName());
                                                             examineesNameLabel.setText(getUserName());
                                                             faceClick.setText(" ");
-                                                            startExamBtn.setVisible(true);
+//                                                            startExamBtn.setVisible(true);
                                                             newCachedThreadPool.shutdown();
                                                         }
                                                     });
@@ -783,7 +799,7 @@ public class EquipAndExamFrame extends JFrame {
                                             });
 
                                             //---- clickRight ----
-                                            clickRight.setText("text");
+//                                            clickRight.setText("text");
                                             refreshIcon.setImage(refreshInternet);
                                             clickRight.setContentAreaFilled(false);
                                             clickRight.setFocusPainted(false);    //去除内边框
@@ -804,31 +820,31 @@ public class EquipAndExamFrame extends JFrame {
                                         }
                                         examStartAllPanel.add(examStartFPanel, BorderLayout.NORTH);
 
-                                        //======== examFacePanel ========
-                                        {
-                                            examFacePanel.setBackground(new Color(0xfbfbfb));
-                                            examFacePanel.setLayout(new BorderLayout());
-
-                                            //======== examFaceFPanel ========
-                                            {
-                                                examFaceFPanel.setBackground(new Color(0xfbfbfb));
-                                                examFaceFPanel.setLayout(new FlowLayout());
-
-                                                //---- examFaceLabel ----
-                                                examFaceLabel.setText("请进行人脸识别");
-                                                examFaceLabel.setForeground(examColor);
-                                                examFaceLabel.setFont(new Font("黑体", Font.PLAIN, 40));
-                                                examFaceFPanel.add(examFaceLabel);
-
-                                                //---- examExamLabel ----
-                                                examExamLabel.setText("登录考核");
-                                                examExamLabel.setForeground(examColor);
-                                                examExamLabel.setFont(new Font("黑体 Light", Font.BOLD, 40));
-                                                examFaceFPanel.add(examExamLabel);
-                                            }
-                                            examFacePanel.add(examFaceFPanel, BorderLayout.NORTH);
-                                        }
-                                        examStartAllPanel.add(examFacePanel, BorderLayout.CENTER);
+//                                        //======== examFacePanel ========
+//                                        {
+//                                            examFacePanel.setBackground(new Color(0xfbfbfb));
+//                                            examFacePanel.setLayout(new BorderLayout());
+//
+//                                            //======== examFaceFPanel ========
+//                                            {
+//                                                examFaceFPanel.setBackground(new Color(0xfbfbfb));
+//                                                examFaceFPanel.setLayout(new FlowLayout());
+//
+//                                                //---- examFaceLabel ----
+////                                                examFaceLabel.setText("请进行人脸识别");
+////                                                examFaceLabel.setForeground(examColor);
+////                                                examFaceLabel.setFont(new Font("黑体", Font.PLAIN, 40));
+////                                                examFaceFPanel.add(examFaceLabel);
+//
+//                                                //---- examExamLabel ----
+////                                                examExamLabel.setText("登录考核");
+////                                                examExamLabel.setForeground(examColor);
+////                                                examExamLabel.setFont(new Font("黑体 Light", Font.BOLD, 40));
+////                                                examFaceFPanel.add(examExamLabel);
+//                                            }
+//                                            examFacePanel.add(examFaceFPanel, BorderLayout.NORTH);
+//                                        }
+//                                        examStartAllPanel.add(examFacePanel, BorderLayout.CENTER);
                                     }
                                     examInfoLabel.add(examStartAllPanel, BorderLayout.CENTER);
                                 }
@@ -864,12 +880,14 @@ public class EquipAndExamFrame extends JFrame {
                                             examineesLabel.setText("考生:");
                                             examineesLabel.setHorizontalTextPosition(SwingConstants.CENTER);
                                             examineesLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                                            examineesLabel.setBorder(new EmptyBorder(6,0,0,0));
                                             examineesPanel.add(examineesLabel);
 
                                             //---- examineesLabel ----
                                             examineesNameLabel.setText("");
                                             examineesNameLabel.setHorizontalTextPosition(SwingConstants.CENTER);
                                             examineesNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                                            examineesNameLabel.setBorder(new EmptyBorder(6,0,0,0));
                                             examineesPanel.add(examineesNameLabel);
                                         }
                                         titleMainPanel.add(examineesPanel, BorderLayout.CENTER);
@@ -884,18 +902,22 @@ public class EquipAndExamFrame extends JFrame {
                                             countDownAndButton.add(countDown);
 
                                             //---- startBtn ----
-                                            startBtn.setText("开始考试");
-                                            countDownAndButton.add(startBtn);
-                                            startBtn.addActionListener(new ActionListener() {
-                                                public void actionPerformed(ActionEvent e) {
-                                                    flag_start = 1;
-                                                    EquipAndExamFrame.vs.VoiceBroadcast("开始考试");
-                                                }
-                                            });
+//                                            startBtn.setText("开始考试");
+//                                            countDownAndButton.add(startBtn);
+//                                            startBtn.addActionListener(new ActionListener() {
+//                                                public void actionPerformed(ActionEvent e) {
+//                                                    flag_start = 1;
+//                                                    EquipAndExamFrame.vs.VoiceBroadcast("开始考试");
+//                                                }
+//                                            });
 
 
                                             //---- submit ----
                                             submit.setText("提交");
+                                            submit.setToolTipText("提交");
+                                            submit.setBackground(Color.WHITE);
+                                            submit.setContentAreaFilled(true);
+                                            submit.setFocusPainted(false);
                                             countDownAndButton.add(submit);
                                         }
                                         titleMainPanel.add(countDownAndButton, BorderLayout.EAST);
@@ -927,21 +949,34 @@ public class EquipAndExamFrame extends JFrame {
                                         {
                                             selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
                                             selectPanel.setBackground(new Color(0xfbfbfb));
+                                            selectPanel.setBorder(new EmptyBorder(10,20,10,20));
 
                                             //---- selectAButton ----
                                             selectAButton.setText("A");
+                                            selectAButton.setFocusPainted(false);
+                                            selectAButton.setMargin(new Insets(10,20, 10, 20));
+                                            selectAButton.setBackground(new Color(0xfbfbfb));
                                             selectPanel.add(selectAButton);
 
                                             //---- selectBButton ----
                                             selectBButton.setText("B");
+                                            selectBButton.setFocusPainted(false);
+                                            selectBButton.setMargin(new Insets(10,20, 10, 20));
+                                            selectBButton.setBackground(new Color(0xfbfbfb));
                                             selectPanel.add(selectBButton);
 
                                             //---- selectCButton ----
                                             selectCButton.setText("C");
+                                            selectCButton.setFocusPainted(false);
+                                            selectCButton.setMargin(new Insets(10,20, 10, 20));
+                                            selectCButton.setBackground(new Color(0xfbfbfb));
                                             selectPanel.add(selectCButton);
 
                                             //---- selectDButton ----
                                             selectDButton.setText("D");
+                                            selectDButton.setFocusPainted(false);
+                                            selectDButton.setMargin(new Insets(10,20, 10, 20));
+                                            selectDButton.setBackground(new Color(0xfbfbfb));
                                             selectPanel.add(selectDButton);
                                         }
                                         ButtonPanel.add(selectPanel);
@@ -953,23 +988,37 @@ public class EquipAndExamFrame extends JFrame {
 
                                             //---- numberOneQuestion ----
                                             numberOneQuestion.setText("1");
+                                            numberOneQuestion.setFocusPainted(false);
+                                            numberOneQuestion.setMargin(new Insets(10, 20, 10, 20));
+                                            numberOneQuestion.setBackground(new Color(0xfbfbfb));
                                             questionNumberAndQuestionButton.add(numberOneQuestion);
 
                                             //---- numberTwoQuestion ----
                                             numberTwoQuestion.setText("2");
+                                            numberTwoQuestion.setFocusPainted(false);
+                                            numberTwoQuestion.setMargin(new Insets(10, 20, 10, 20));
+                                            numberTwoQuestion.setBackground(new Color(0xfbfbfb));
                                             questionNumberAndQuestionButton.add(numberTwoQuestion);
 
                                             //======== NextQuestionAndLastQuestion ========
                                             {
-                                                NextQuestionAndLastQuestion.setLayout(new BoxLayout(NextQuestionAndLastQuestion, BoxLayout.X_AXIS));
+//                                                NextQuestionAndLastQuestion.setLayout(new BoxLayout(NextQuestionAndLastQuestion, BoxLayout.X_AXIS));
+                                                NextQuestionAndLastQuestion.setLayout(new FlowLayout(FlowLayout.RIGHT));
                                                 NextQuestionAndLastQuestion.setBackground(new Color(0xfbfbfb));
+                                                NextQuestionAndLastQuestion.setBorder(new EmptyBorder(0,10,0,10));
 
                                                 //---- lastButton ----
                                                 lastButton.setText("上一题");
+                                                lastButton.setFocusPainted(false);
+                                                lastButton.setMargin(new Insets(10, 20, 10, 20));
+                                                lastButton.setBackground(new Color(0xfbfbfb));
                                                 NextQuestionAndLastQuestion.add(lastButton);
 
                                                 //---- nextButton ----
                                                 nextButton.setText("下一题");
+                                                nextButton.setFocusPainted(false);
+                                                nextButton.setMargin(new Insets(10, 20, 10, 20));
+                                                nextButton.setBackground(new Color(0xfbfbfb));
                                                 NextQuestionAndLastQuestion.add(nextButton);
                                             }
                                             questionNumberAndQuestionButton.add(NextQuestionAndLastQuestion);
@@ -977,7 +1026,10 @@ public class EquipAndExamFrame extends JFrame {
                                         ButtonPanel.add(questionNumberAndQuestionButton);
                                     }
                                     examMainPanel.add(ButtonPanel, BorderLayout.SOUTH);
-                                    registerListeners(examTitleLabel, countDown, questionLabel, answerLabel, startBtn, submit,
+//                                    registerListeners(examTitleLabel, countDown, questionLabel, answerLabel, startBtn, submit,
+//                                            numberOneQuestion, numberTwoQuestion, lastButton, nextButton, selectAButton,
+//                                            selectBButton, selectCButton, selectDButton);
+                                    registerListeners(examTitleLabel, countDown, questionLabel, answerLabel, faceClick, submit,
                                             numberOneQuestion, numberTwoQuestion, lastButton, nextButton, selectAButton,
                                             selectBButton, selectCButton, selectDButton);
                                 }
@@ -1073,14 +1125,19 @@ public class EquipAndExamFrame extends JFrame {
             }
         }
     }
-    public void registerListeners(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel, JLabel answerLabel, JButton startBtn,
-                                  JButton submit, JButton numberOneQuestion, JButton numberTwoQuestion,  JButton lastButton,
-                                  JButton nextButton, JButton selectAButton, JButton selectBButton, JButton selectCButton, JButton selectDButton){
+//    public void registerListeners(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel, JLabel answerLabel, JButton StartBtn,
+//                                  JButton submit, JButton numberOneQuestion, JButton numberTwoQuestion,  JButton lastButton,
+//                                  JButton nextButton, JButton selectAButton, JButton selectBButton, JButton selectCButton, JButton selectDButton){
+    public void registerListeners(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel, JLabel answerLabel, JLabel faceClick,
+                              JButton submit, JButton numberOneQuestion, JButton numberTwoQuestion,  JButton lastButton,
+                              JButton nextButton, JButton selectAButton, JButton selectBButton, JButton selectCButton, JButton selectDButton){
         // 开始答题事件
+//        StartListener startListener = new StartListener(examTitleLabel, countDown, questionLabel, answerLabel,
+//                numberOneQuestion, numberTwoQuestion, submit);
+//            startBtn.addActionListener(startListener);
         StartListener startListener = new StartListener(examTitleLabel, countDown, questionLabel, answerLabel,
                 numberOneQuestion, numberTwoQuestion, submit);
-            //startExamBtn.addActionListener(startListener);
-        startBtn.addActionListener(startListener);
+        faceClick.addPropertyChangeListener(startListener);
 
         // 跳转事件
         AnswerQuestionListener answerQuestionListener = new AnswerQuestionListener(questionLabel, answerLabel,
@@ -1297,7 +1354,6 @@ public class EquipAndExamFrame extends JFrame {
                 // 销毁timer
                 timer.cancel();
                 timer = new Timer();
-
                 flag_start = 0;
                 examTitleLabel.setText("未开始");
                 countDown.setText("剩时：30秒");
@@ -1321,6 +1377,7 @@ public class EquipAndExamFrame extends JFrame {
                         try {
                             EquipAndExamFrame.vs.VoiceBroadcast("考试结束");
                             Thread.sleep(10000);
+                            startExamBtn.setVisible(true);
                             questionLabel.setText("");
                             ((CardLayout) examCardPanel.getLayout()).next(examCardPanel);
                         } catch (InterruptedException e1) {
@@ -1334,13 +1391,14 @@ public class EquipAndExamFrame extends JFrame {
     }
 
     // 开始答题事件
-    class StartListener implements ActionListener {
+    class StartListener implements PropertyChangeListener {
+//    class  StartListener implements ActionListener {
         private JLabel examTitleLabel, countDown, questionLabel, answerLabel;
         private JButton numberOneQuestion, numberTwoQuestion;
         private JButton submit;
 
         public StartListener(JLabel examTitleLabel, JLabel countDown, JLabel questionLabel,
-                                     JLabel answerLabel, JButton numberOneQuestion, JButton numberTwoQuestion, JButton submit) {
+                             JLabel answerLabel, JButton numberOneQuestion, JButton numberTwoQuestion, JButton submit) {
             super();
             this.examTitleLabel = examTitleLabel;
             this.countDown = countDown;
@@ -1352,32 +1410,67 @@ public class EquipAndExamFrame extends JFrame {
         }
 
         //点击触发倒计时事件
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//
+//            if (flag_start != 0) {
+//                return;
+//            }
+//            // 刷新时间
+//            time = 30 + 3;
+//            timer.cancel();
+//            timer = new Timer();
+//            timerStart(1000, 1, countDown, submit);
+//            // 第二次点击开始按钮无效
+//            flag_start = 1;
+//            examTitleLabel.setText("开始答题");
+//            ExamData examData = getStart(getParam("1", "0", "0"));
+//            AnswerSetText(answerLabel, examData.getQuestion().getOptions());
+//
+//            // 改变颜色
+//            changeButton(numberOneQuestion, numberTwoQuestion);
+//
+//            try {
+//                JlabelSetText(questionLabel, examData.getQuestion().getSubject());
+//            } catch (InterruptedException e1) {
+//                // TODO Auto-generated catch block
+//                e1.printStackTrace();
+//            }
+//        }
+//    }
+
+        //开始考试
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void propertyChange(PropertyChangeEvent evt) {
 
-            if (flag_start != 0) {
-                return;
-            }
-            // 刷新时间
-            time = 30 + 3;
-            timer.cancel();
-            timer = new Timer();
-            timerStart(1000, 1, countDown,submit);
-            // 第二次点击开始按钮无效
-            flag_start = 1;
-            examTitleLabel.setText("开始答题");
-            ExamData examData = getStart(getParam("1", "0", "0"));
-            AnswerSetText(answerLabel, examData.getQuestion().getOptions());
+            if(faceClick.getText().equals("识别成功")){
+                log.info(String.valueOf(flag_start));
+                if (flag_start != 0) {
+                    return;
+                }
+                // 刷新时间
+                time = 30 + 1;
+                timer.cancel();
+                timer = new Timer();
+                timerStart(1000, 1, countDown,submit);
+                log.info("倒计时开启");
+                //获取考题
+                flag_start = 1;
+                examTitleLabel.setText("开始答题");
+                log.info("标题已设置");
+                ExamData examData = getStart(getParam("1", "0", "0"));
+                AnswerSetText(answerLabel, examData.getQuestion().getOptions());
+                log.info("获取考题");
 
-            // 改变颜色
-            changeButton(numberOneQuestion, numberTwoQuestion);
+                // 改变颜色
+                changeButton(numberOneQuestion, numberTwoQuestion);
 
-            try {
-                JlabelSetText(questionLabel, examData.getQuestion().getSubject());
-
-            } catch (InterruptedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                try {
+                    JlabelSetText(questionLabel, examData.getQuestion().getSubject());
+                } catch (InterruptedException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
         }
     }
@@ -1392,6 +1485,7 @@ public class EquipAndExamFrame extends JFrame {
         questionIdMap.put(examData.getQuestion().getQuestionSort(),
                 Integer.toString(examData.getQuestion().getQuestionId()));
         examId = examData.getExamId().toString();
+        log.info("已从服务器中获取考题");
         return examData;
     }
 
@@ -1416,6 +1510,7 @@ public class EquipAndExamFrame extends JFrame {
     // 获取参数
     public Map<String, String> getParam(String questionSort, String questionId, String answer) {
         Map<String, String> map = new HashMap<String, String>();
+        log.info("正在获取参数");
         map.put("userId", userId);
         map.put("userID", userId);
         map.put("userName", userName);

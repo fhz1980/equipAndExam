@@ -19,5 +19,7 @@ public class EquipAndExam {
         log.info("程序启动");
         DeviceState deviceState = DeviceState.getInstance();
         deviceState.setVisible(true);
+//        EquipAndExamFrame equipAndExamFrame = EquipAndExamFrame.getInstance();
+//        equipAndExamFrame.setVisible(true);
     }
 }
